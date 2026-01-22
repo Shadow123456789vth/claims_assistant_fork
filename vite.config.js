@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: '/smartapps/',
+    base: '/claims/',
     server: {
       proxy: {
         // Proxy ServiceNow API requests to avoid CORS issues
