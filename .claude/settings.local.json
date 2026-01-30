@@ -25,7 +25,8 @@
       "Bash(dir:*)",
       "Bash(npx vite)",
       "Bash(netstat:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(timeout:*)"
     ]
   }
 }
