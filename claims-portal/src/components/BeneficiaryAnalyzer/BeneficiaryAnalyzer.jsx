@@ -5,13 +5,15 @@ import {
   DxcContainer,
   DxcTypography,
   DxcButton,
-  DxcTable,
   DxcBadge,
   DxcAlert,
   DxcInset,
   DxcChip,
   DxcDivider,
-  DxcSpinner
+  DxcSpinner,
+  DxcCard,
+  DxcGrid,
+  DxcStatusLight
 } from '@dxc-technology/halstack-react';
 import './BeneficiaryAnalyzer.css';
 
@@ -159,13 +161,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
     return () => clearTimeout(timer);
   }, [claim]);
 
-  const getConfidenceColor = (score) => {
-    if (score >= 0.9) return 'var(--color-status-success-darker)';
-    if (score >= 0.75) return 'var(--color-status-warning-darker)';
-    return 'var(--color-status-error-darker)';
-  };
-
-  const getConfidenceBadgeType = (score) => {
+  const getConfidenceMode = (score) => {
     if (score >= 0.9) return 'success';
     if (score >= 0.75) return 'warning';
     return 'error';
@@ -239,263 +235,302 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
         <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
           <DxcFlex justifyContent="space-between" alignItems="center">
             <DxcHeading level={2} text="Beneficiary Analyzer" />
-            <DxcFlex gap="var(--spacing-gap-s)">
-              <DxcButton
-                label="Cancel"
-                mode="tertiary"
-                onClick={onCancel}
-              />
-              <DxcButton
-                label="Approve & Append to Case"
-                mode="primary"
-                onClick={handleApproveBeneficiaries}
-                icon="check_circle"
-              />
-            </DxcFlex>
+            {(onCancel || onApproveBeneficiaries) && (
+              <DxcFlex gap="var(--spacing-gap-s)">
+                {onCancel && (
+                  <DxcButton
+                    label="Cancel"
+                    mode="tertiary"
+                    onClick={onCancel}
+                  />
+                )}
+                {onApproveBeneficiaries && (
+                  <DxcButton
+                    label="Approve & Append to Case"
+                    mode="primary"
+                    onClick={handleApproveBeneficiaries}
+                    icon="check_circle"
+                  />
+                )}
+              </DxcFlex>
+            )}
           </DxcFlex>
           <DxcTypography color="var(--color-fg-neutral-strong)">
-            AI-powered beneficiary extraction and verification for Claim #{claimId}
+            AI-powered beneficiary extraction and verification for Claim #{claimId || claim?.claimNumber || 'N/A'}
           </DxcTypography>
         </DxcFlex>
 
         {/* Overall Analysis Summary */}
-        <DxcContainer padding="var(--spacing-padding-l)" style={{ backgroundColor: 'var(--color-bg-neutral-lightest)' }}>
-          <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-            <DxcFlex justifyContent="space-between" alignItems="center">
-              <DxcHeading level={4} text="Analysis Summary" />
-              <DxcChip
-                label={`Overall Confidence: ${(analysisData.overallAnalysis.confidence * 100).toFixed(0)}%`}
-                icon="psychology"
-              />
-            </DxcFlex>
-
-            <DxcAlert
-              type={analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'success' : 'warning'}
-              inlineText={analysisData.overallAnalysis.recommendation}
-            />
-
-            {analysisData.overallAnalysis.discrepancies.length > 0 && (
-              <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                <DxcTypography fontWeight="font-weight-semibold">
-                  Discrepancies Detected ({analysisData.overallAnalysis.discrepancies.length})
-                </DxcTypography>
-                {analysisData.overallAnalysis.discrepancies.map((disc, idx) => (
-                  <DxcAlert
-                    key={idx}
-                    type={disc.severity === 'LOW' ? 'info' : 'warning'}
-                    inlineText={`${disc.field.toUpperCase()}: "${disc.extracted}" vs "${disc.administrative}" - ${disc.recommendation}`}
-                  />
-                ))}
+        <DxcCard outlined>
+          <DxcInset space="var(--spacing-padding-l)">
+            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+              <DxcFlex justifyContent="space-between" alignItems="center">
+                <DxcHeading level={4} text="Analysis Summary" />
+                <DxcChip
+                  label={`Overall Confidence: ${(analysisData.overallAnalysis.confidence * 100).toFixed(0)}%`}
+                  prefixIcon="psychology"
+                />
               </DxcFlex>
-            )}
-          </DxcFlex>
-        </DxcContainer>
+
+              <DxcAlert
+                semantic={analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'success' : 'warning'}
+                title={analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'Match Confirmed' : 'Review Required'}
+                message={{ text: analysisData.overallAnalysis.recommendation }}
+              />
+
+              {analysisData.overallAnalysis.discrepancies.length > 0 && (
+                <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    Discrepancies Detected ({analysisData.overallAnalysis.discrepancies.length})
+                  </DxcTypography>
+                  {analysisData.overallAnalysis.discrepancies.map((disc, idx) => (
+                    <DxcAlert
+                      key={idx}
+                      semantic={disc.severity === 'LOW' ? 'info' : 'warning'}
+                      title={`${disc.field.toUpperCase()} Discrepancy`}
+                      message={{ text: `"${disc.extracted}" vs "${disc.administrative}" - ${disc.recommendation}` }}
+                    />
+                  ))}
+                </DxcFlex>
+              )}
+            </DxcFlex>
+          </DxcInset>
+        </DxcCard>
 
         {/* Main Content Grid */}
         <div className="beneficiary-analyzer-grid">
-          {/* Left Column: AI-Extracted Beneficiaries */}
-          <DxcContainer padding="var(--spacing-padding-l)" style={{ backgroundColor: 'var(--color-bg-neutral-lightest)' }}>
-            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-              <DxcFlex justifyContent="space-between" alignItems="center">
-                <DxcHeading level={4} text="AI-Extracted Beneficiaries" />
-                <DxcChip
-                  label={`${analysisData.extractedBeneficiaries.length} Found`}
-                  icon="auto_awesome"
-                />
-              </DxcFlex>
-
-              {analysisData.extractedBeneficiaries.map((beneficiary, index) => (
-                <div key={beneficiary.id}>
-                  {index > 0 && <DxcDivider />}
+          <DxcGrid templateColumns={["1fr", "1fr"]} gap={{ columnGap: "1.5rem", rowGap: "1.5rem" }}>
+            {/* Left Column: AI-Extracted Beneficiaries */}
+            <DxcGrid.Item>
+              <DxcCard outlined>
+                <DxcInset space="var(--spacing-padding-l)">
                   <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                    {/* Beneficiary Header */}
-                    <DxcFlex justifyContent="space-between" alignItems="flex-start">
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                        <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
-                          {beneficiary.fullName}
-                        </DxcTypography>
-                        <DxcFlex gap="var(--spacing-gap-xs)">
-                          <DxcChip label={beneficiary.relationship} size="small" />
-                          <DxcChip label={`${beneficiary.percentage}%`} size="small" />
-                        </DxcFlex>
-                      </DxcFlex>
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="flex-end">
-                        <div style={{
-                          padding: '4px 8px',
-                          backgroundColor: getConfidenceColor(beneficiary.confidenceScores.overall),
-                          color: 'white',
-                          borderRadius: '4px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          {getConfidenceLabel(beneficiary.confidenceScores.overall)} ({(beneficiary.confidenceScores.overall * 100).toFixed(0)}%)
-                        </div>
-                      </DxcFlex>
-                    </DxcFlex>
-
-                    {/* Beneficiary Details with Confidence Scores */}
-                    <div className="beneficiary-details-grid">
-                      <DetailWithConfidence
-                        label="SSN"
-                        value={beneficiary.ssn}
-                        confidence={beneficiary.confidenceScores.ssn}
-                      />
-                      <DetailWithConfidence
-                        label="Date of Birth"
-                        value={beneficiary.dateOfBirth}
-                        confidence={beneficiary.confidenceScores.dateOfBirth}
-                      />
-                      <DetailWithConfidence
-                        label="Address"
-                        value={`${beneficiary.address.street}, ${beneficiary.address.city}, ${beneficiary.address.state} ${beneficiary.address.zip}`}
-                        confidence={beneficiary.confidenceScores.address}
-                      />
-                      {beneficiary.phone && (
-                        <DetailWithConfidence
-                          label="Phone"
-                          value={beneficiary.phone}
-                          confidence={0.9}
-                        />
-                      )}
-                      {beneficiary.email && (
-                        <DetailWithConfidence
-                          label="Email"
-                          value={beneficiary.email}
-                          confidence={0.95}
-                        />
-                      )}
-                    </div>
-
-                    {/* LexisNexis Actions */}
-                    <DxcFlex gap="var(--spacing-gap-s)">
-                      <DxcButton
-                        label={processingLexisNexis[`${beneficiary.id}-address`] ? "Verifying..." : "Verify Address"}
-                        mode="secondary"
-                        size="small"
-                        icon={processingLexisNexis[`${beneficiary.id}-address`] ? undefined : "location_on"}
-                        onClick={() => handleLexisNexisLookup(beneficiary.id, 'address')}
-                        disabled={processingLexisNexis[`${beneficiary.id}-address`]}
-                      />
-                      <DxcButton
-                        label={processingLexisNexis[`${beneficiary.id}-deceased`] ? "Checking..." : "Check Deceased Status"}
-                        mode="secondary"
-                        size="small"
-                        icon={processingLexisNexis[`${beneficiary.id}-deceased`] ? undefined : "person_search"}
-                        onClick={() => handleLexisNexisLookup(beneficiary.id, 'deceased')}
-                        disabled={processingLexisNexis[`${beneficiary.id}-deceased`]}
-                      />
-                      <DxcButton
-                        label="View Source Document"
-                        mode="tertiary"
-                        size="small"
-                        icon="description"
-                        onClick={() => handleViewDocument(beneficiary.sourceDocument.id)}
+                    <DxcFlex justifyContent="space-between" alignItems="center">
+                      <DxcHeading level={4} text="AI-Extracted Beneficiaries" />
+                      <DxcChip
+                        label={`${analysisData.extractedBeneficiaries.length} Found`}
+                        prefixIcon="auto_awesome"
                       />
                     </DxcFlex>
 
-                    {/* LexisNexis Results */}
-                    {lexisNexisResults[beneficiary.id] && (
-                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                        {lexisNexisResults[beneficiary.id].address && (
-                          <DxcAlert
-                            type="info"
-                            inlineText={`LexisNexis Current Address: ${lexisNexisResults[beneficiary.id].address.street}, ${lexisNexisResults[beneficiary.id].address.city}, ${lexisNexisResults[beneficiary.id].address.state} ${lexisNexisResults[beneficiary.id].address.zip} (Verified: ${lexisNexisResults[beneficiary.id].address.lastVerified})`}
-                          />
-                        )}
-                        {lexisNexisResults[beneficiary.id].deceased && (
-                          <DxcAlert
-                            type={lexisNexisResults[beneficiary.id].deceased.status === 'ALIVE' ? 'success' : 'error'}
-                            inlineText={`LexisNexis Death Verification: ${lexisNexisResults[beneficiary.id].deceased.status} (Confidence: ${(lexisNexisResults[beneficiary.id].deceased.confidence * 100).toFixed(0)}%)`}
-                          />
-                        )}
-                      </DxcFlex>
-                    )}
+                    {analysisData.extractedBeneficiaries.map((beneficiary, index) => (
+                      <div key={beneficiary.id}>
+                        {index > 0 && <DxcDivider />}
+                        <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                          {/* Beneficiary Header */}
+                          <DxcFlex justifyContent="space-between" alignItems="flex-start">
+                            <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+                                {beneficiary.fullName}
+                              </DxcTypography>
+                              <DxcFlex gap="var(--spacing-gap-xs)">
+                                <DxcChip label={beneficiary.relationship} />
+                                <DxcChip label={`${beneficiary.percentage}%`} />
+                              </DxcFlex>
+                            </DxcFlex>
+                            <DxcStatusLight
+                              mode={getConfidenceMode(beneficiary.confidenceScores.overall)}
+                              label={`${getConfidenceLabel(beneficiary.confidenceScores.overall)} (${(beneficiary.confidenceScores.overall * 100).toFixed(0)}%)`}
+                              size="medium"
+                            />
+                          </DxcFlex>
 
-                    {/* AI Reasoning */}
-                    <DxcInset>
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                          <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-primary-stronger)' }}>
-                            psychology
-                          </span>
-                          <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
-                            AI Extraction Reasoning
-                          </DxcTypography>
+                          {/* Beneficiary Details with Confidence Scores */}
+                          <div className="beneficiary-details-grid">
+                            <DxcGrid templateColumns={["1fr", "1fr"]} gap={{ columnGap: "1rem", rowGap: "1rem" }}>
+                              <DxcGrid.Item>
+                                <DetailWithConfidence
+                                  label="SSN"
+                                  value={beneficiary.ssn}
+                                  confidence={beneficiary.confidenceScores.ssn}
+                                />
+                              </DxcGrid.Item>
+                              <DxcGrid.Item>
+                                <DetailWithConfidence
+                                  label="Date of Birth"
+                                  value={beneficiary.dateOfBirth}
+                                  confidence={beneficiary.confidenceScores.dateOfBirth}
+                                />
+                              </DxcGrid.Item>
+                              <DxcGrid.Item>
+                                <DetailWithConfidence
+                                  label="Address"
+                                  value={`${beneficiary.address.street}, ${beneficiary.address.city}, ${beneficiary.address.state} ${beneficiary.address.zip}`}
+                                  confidence={beneficiary.confidenceScores.address}
+                                />
+                              </DxcGrid.Item>
+                              {beneficiary.phone && (
+                                <DxcGrid.Item>
+                                  <DetailWithConfidence
+                                    label="Phone"
+                                    value={beneficiary.phone}
+                                    confidence={0.9}
+                                  />
+                                </DxcGrid.Item>
+                              )}
+                              {beneficiary.email && (
+                                <DxcGrid.Item>
+                                  <DetailWithConfidence
+                                    label="Email"
+                                    value={beneficiary.email}
+                                    confidence={0.95}
+                                  />
+                                </DxcGrid.Item>
+                              )}
+                            </DxcGrid>
+                          </div>
+
+                          {/* LexisNexis Actions */}
+                          <DxcFlex gap="var(--spacing-gap-s)">
+                            <DxcButton
+                              label={processingLexisNexis[`${beneficiary.id}-address`] ? "Verifying..." : "Verify Address"}
+                              mode="secondary"
+                              size="small"
+                              icon={processingLexisNexis[`${beneficiary.id}-address`] ? undefined : "location_on"}
+                              onClick={() => handleLexisNexisLookup(beneficiary.id, 'address')}
+                              disabled={processingLexisNexis[`${beneficiary.id}-address`]}
+                            />
+                            <DxcButton
+                              label={processingLexisNexis[`${beneficiary.id}-deceased`] ? "Checking..." : "Check Deceased Status"}
+                              mode="secondary"
+                              size="small"
+                              icon={processingLexisNexis[`${beneficiary.id}-deceased`] ? undefined : "person_search"}
+                              onClick={() => handleLexisNexisLookup(beneficiary.id, 'deceased')}
+                              disabled={processingLexisNexis[`${beneficiary.id}-deceased`]}
+                            />
+                            <DxcButton
+                              label="View Source Document"
+                              mode="tertiary"
+                              size="small"
+                              icon="description"
+                              onClick={() => handleViewDocument(beneficiary.sourceDocument.id)}
+                            />
+                          </DxcFlex>
+
+                          {/* LexisNexis Results */}
+                          {lexisNexisResults[beneficiary.id] && (
+                            <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                              {lexisNexisResults[beneficiary.id].address && (
+                                <DxcAlert
+                                  semantic="info"
+                                  title="LexisNexis Address Verification"
+                                  message={{ text: `Current Address: ${lexisNexisResults[beneficiary.id].address.street}, ${lexisNexisResults[beneficiary.id].address.city}, ${lexisNexisResults[beneficiary.id].address.state} ${lexisNexisResults[beneficiary.id].address.zip} (Verified: ${lexisNexisResults[beneficiary.id].address.lastVerified})` }}
+                                />
+                              )}
+                              {lexisNexisResults[beneficiary.id].deceased && (
+                                <DxcAlert
+                                  semantic={lexisNexisResults[beneficiary.id].deceased.status === 'ALIVE' ? 'success' : 'error'}
+                                  title="Death Verification"
+                                  message={{ text: `Status: ${lexisNexisResults[beneficiary.id].deceased.status} (Confidence: ${(lexisNexisResults[beneficiary.id].deceased.confidence * 100).toFixed(0)}%)` }}
+                                />
+                              )}
+                            </DxcFlex>
+                          )}
+
+                          {/* AI Reasoning */}
+                          <DxcInset>
+                            <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                              <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                                <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-primary-stronger)' }}>
+                                  psychology
+                                </span>
+                                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
+                                  AI Extraction Reasoning
+                                </DxcTypography>
+                              </DxcFlex>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+                                {beneficiary.extractionReasoning}
+                              </DxcTypography>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                                Source: {beneficiary.sourceDocument.name} (Page {beneficiary.sourceDocument.pageNumber})
+                              </DxcTypography>
+                            </DxcFlex>
+                          </DxcInset>
                         </DxcFlex>
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
-                          {beneficiary.extractionReasoning}
-                        </DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                          Source: {beneficiary.sourceDocument.name} (Page {beneficiary.sourceDocument.pageNumber})
-                        </DxcTypography>
-                      </DxcFlex>
-                    </DxcInset>
+                      </div>
+                    ))}
                   </DxcFlex>
-                </div>
-              ))}
-            </DxcFlex>
-          </DxcContainer>
+                </DxcInset>
+              </DxcCard>
+            </DxcGrid.Item>
 
-          {/* Right Column: Administrative Records Comparison */}
-          <DxcContainer padding="var(--spacing-padding-l)" style={{ backgroundColor: 'var(--color-bg-neutral-lightest)' }}>
-            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-              <DxcFlex justifyContent="space-between" alignItems="center">
-                <DxcHeading level={4} text="Administrative Records" />
-                <DxcChip
-                  label={`${analysisData.administrativeBeneficiaries.length} on File`}
-                  icon="folder"
-                />
-              </DxcFlex>
-
-              {analysisData.administrativeBeneficiaries.map((beneficiary, index) => (
-                <div key={beneficiary.id}>
-                  {index > 0 && <DxcDivider />}
+            {/* Right Column: Administrative Records Comparison */}
+            <DxcGrid.Item>
+              <DxcCard outlined>
+                <DxcInset space="var(--spacing-padding-l)">
                   <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                    {/* Beneficiary Header */}
-                    <DxcFlex justifyContent="space-between" alignItems="flex-start">
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                        <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
-                          {beneficiary.fullName}
-                        </DxcTypography>
-                        <DxcFlex gap="var(--spacing-gap-xs)">
-                          <DxcChip label={beneficiary.relationship} size="small" />
-                          <DxcChip label={`${beneficiary.percentage}%`} size="small" />
-                        </DxcFlex>
-                      </DxcFlex>
+                    <DxcFlex justifyContent="space-between" alignItems="center">
+                      <DxcHeading level={4} text="Administrative Records" />
+                      <DxcChip
+                        label={`${analysisData.administrativeBeneficiaries.length} on File`}
+                        prefixIcon="folder"
+                      />
                     </DxcFlex>
 
-                    {/* Administrative Details */}
-                    <div className="beneficiary-details-grid">
-                      <SimpleDetail label="SSN" value={beneficiary.ssn} />
-                      <SimpleDetail label="Date of Birth" value={beneficiary.dateOfBirth} />
-                      <SimpleDetail
-                        label="Address"
-                        value={`${beneficiary.address.street}, ${beneficiary.address.city}, ${beneficiary.address.state} ${beneficiary.address.zip}`}
-                      />
-                      {beneficiary.phone && (
-                        <SimpleDetail label="Phone" value={beneficiary.phone} />
-                      )}
-                      {beneficiary.email && (
-                        <SimpleDetail label="Email" value={beneficiary.email} />
-                      )}
-                    </div>
+                    {analysisData.administrativeBeneficiaries.map((beneficiary, index) => (
+                      <div key={beneficiary.id}>
+                        {index > 0 && <DxcDivider />}
+                        <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                          {/* Beneficiary Header */}
+                          <DxcFlex justifyContent="space-between" alignItems="flex-start">
+                            <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+                                {beneficiary.fullName}
+                              </DxcTypography>
+                              <DxcFlex gap="var(--spacing-gap-xs)">
+                                <DxcChip label={beneficiary.relationship} />
+                                <DxcChip label={`${beneficiary.percentage}%`} />
+                              </DxcFlex>
+                            </DxcFlex>
+                          </DxcFlex>
 
-                    {/* Admin Record Metadata */}
-                    <DxcInset>
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                          Source: {beneficiary.source}
-                        </DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                          Last Updated: {beneficiary.lastUpdated}
-                        </DxcTypography>
-                      </DxcFlex>
-                    </DxcInset>
+                          {/* Administrative Details */}
+                          <div className="beneficiary-details-grid">
+                            <DxcGrid templateColumns={["1fr", "1fr"]} gap={{ columnGap: "1rem", rowGap: "1rem" }}>
+                              <DxcGrid.Item>
+                                <SimpleDetail label="SSN" value={beneficiary.ssn} />
+                              </DxcGrid.Item>
+                              <DxcGrid.Item>
+                                <SimpleDetail label="Date of Birth" value={beneficiary.dateOfBirth} />
+                              </DxcGrid.Item>
+                              <DxcGrid.Item>
+                                <SimpleDetail
+                                  label="Address"
+                                  value={`${beneficiary.address.street}, ${beneficiary.address.city}, ${beneficiary.address.state} ${beneficiary.address.zip}`}
+                                />
+                              </DxcGrid.Item>
+                              {beneficiary.phone && (
+                                <DxcGrid.Item>
+                                  <SimpleDetail label="Phone" value={beneficiary.phone} />
+                                </DxcGrid.Item>
+                              )}
+                              {beneficiary.email && (
+                                <DxcGrid.Item>
+                                  <SimpleDetail label="Email" value={beneficiary.email} />
+                                </DxcGrid.Item>
+                              )}
+                            </DxcGrid>
+                          </div>
+
+                          {/* Admin Record Metadata */}
+                          <DxcInset>
+                            <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                                Source: {beneficiary.source}
+                              </DxcTypography>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                                Last Updated: {beneficiary.lastUpdated}
+                              </DxcTypography>
+                            </DxcFlex>
+                          </DxcInset>
+                        </DxcFlex>
+                      </div>
+                    ))}
                   </DxcFlex>
-                </div>
-              ))}
-            </DxcFlex>
-          </DxcContainer>
+                </DxcInset>
+              </DxcCard>
+            </DxcGrid.Item>
+          </DxcGrid>
         </div>
       </DxcFlex>
     </DxcContainer>
@@ -504,10 +539,10 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
 
 // Helper component for displaying details with confidence scores
 const DetailWithConfidence = ({ label, value, confidence }) => {
-  const getConfidenceColor = (score) => {
-    if (score >= 0.9) return 'var(--color-status-success-darker)';
-    if (score >= 0.75) return 'var(--color-status-warning-darker)';
-    return 'var(--color-status-error-darker)';
+  const getConfidenceMode = (score) => {
+    if (score >= 0.9) return 'success';
+    if (score >= 0.75) return 'warning';
+    return 'error';
   };
 
   return (
@@ -519,15 +554,11 @@ const DetailWithConfidence = ({ label, value, confidence }) => {
         <DxcTypography fontSize="font-scale-01">
           {value}
         </DxcTypography>
-        <div style={{
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          backgroundColor: getConfidenceColor(confidence)
-        }} />
-        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-          {(confidence * 100).toFixed(0)}%
-        </DxcTypography>
+        <DxcStatusLight
+          mode={getConfidenceMode(confidence)}
+          label={`${(confidence * 100).toFixed(0)}%`}
+          size="small"
+        />
       </DxcFlex>
     </DxcFlex>
   );
