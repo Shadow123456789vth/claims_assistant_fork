@@ -102,19 +102,26 @@ function AppContent() {
     <DxcApplicationLayout
       header={
         <DxcApplicationLayout.Header
-          logo={
-            <img
-              src="/bloom-logo.jpg"
-              alt="Bloom Insurance"
-              style={{
-                height: '40px',
-                width: 'auto',
-                objectFit: 'contain',
-                marginRight: '12px'
-              }}
-            />
+          content={
+            <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+              <img
+                src="/bloom-logo.jpg"
+                alt="Bloom Insurance"
+                style={{
+                  height: '36px',
+                  width: 'auto',
+                  objectFit: 'contain'
+                }}
+              />
+              <DxcTypography
+                fontSize="font-scale-04"
+                fontWeight="font-weight-bold"
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Claims Assistant
+              </DxcTypography>
+            </DxcFlex>
           }
-          appTitle="Claims Assistant"
           sideContent={(isResponsive) =>
             isResponsive ? null : (
               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
