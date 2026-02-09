@@ -257,14 +257,17 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 >
                   <div />
                 </DxcTabs.Tab>
-                <DxcTabs.Tab
-                  label="Beneficiary Analyzer"
-                  icon="psychology"
-                  active={activeTab === 6}
-                  onClick={() => setActiveTab(6)}
-                >
-                  <div />
-                </DxcTabs.Tab>
+                {/* Only show Beneficiary Analyzer tab for death claims */}
+                {claim.type === 'death' && (
+                  <DxcTabs.Tab
+                    label="Beneficiary Analyzer"
+                    icon="psychology"
+                    active={activeTab === 6}
+                    onClick={() => setActiveTab(6)}
+                  >
+                    <div />
+                  </DxcTabs.Tab>
+                )}
               </DxcTabs>
             </DxcInset>
 
@@ -274,24 +277,27 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
                   {demoLineOfBusiness === 'LA' ? (
                     <>
-                      {/* L&A Mode: Death Event and AI Insights */}
+                      {/* L&A Mode: Conditional panels based on claim type */}
                       <div className="dashboard-grid-top">
-                        <DeathEventPanel
-                          claimData={{
-                            dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
-                            mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
-                            causeOfDeath: claim.deathEvent?.causeOfDeath,
-                            deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
-                            countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
-                            proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
-                            proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
-                            certifiedDOB: claim.insured?.dateOfBirth,
-                            verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
-                            verificationScore: claim.deathEvent?.verificationScore || 95,
-                            specialEvent: claim.deathEvent?.specialEvent
-                          }}
-                          onEdit={() => console.log('Edit death event')}
-                        />
+                        {/* Only show Death Event Panel for death claims */}
+                        {claim.type === 'death' && (
+                          <DeathEventPanel
+                            claimData={{
+                              dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
+                              mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
+                              causeOfDeath: claim.deathEvent?.causeOfDeath,
+                              deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
+                              countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
+                              proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
+                              proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
+                              certifiedDOB: claim.insured?.dateOfBirth,
+                              verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
+                              verificationScore: claim.deathEvent?.verificationScore || 95,
+                              specialEvent: claim.deathEvent?.specialEvent
+                            }}
+                            onEdit={() => console.log('Edit death event')}
+                          />
+                        )}
                         <AIInsightsPanel
                           claimData={{
                             riskScore: claim.aiInsights?.riskScore || 0
@@ -371,12 +377,15 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         icon="upload_file"
                         onClick={() => setActiveTab(5)}
                       />
-                      <DxcButton
-                        label="Analyze Beneficiaries"
-                        mode="primary"
-                        icon="psychology"
-                        onClick={() => setActiveTab(6)}
-                      />
+                      {/* Only show Beneficiary Analyzer for death claims */}
+                      {claim.type === 'death' && (
+                        <DxcButton
+                          label="Analyze Beneficiaries"
+                          mode="primary"
+                          icon="psychology"
+                          onClick={() => setActiveTab(6)}
+                        />
+                      )}
                     </DxcFlex>
                   </DxcContainer>
                 </DxcFlex>
@@ -476,13 +485,16 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                       <DxcFlex justifyContent="space-between" alignItems="center">
                         <DxcHeading level={4} text="Payment History" />
                         <DxcFlex gap="var(--spacing-gap-s)">
-                          <DxcButton
-                            label="Calculate PMI"
-                            mode="secondary"
-                            size="small"
-                            icon="calculate"
-                            onClick={() => setShowPMICalculator(true)}
-                          />
+                          {/* Only show PMI Calculator for death claims */}
+                          {claim.type === 'death' && (
+                            <DxcButton
+                              label="Calculate PMI"
+                              mode="secondary"
+                              size="small"
+                              icon="calculate"
+                              onClick={() => setShowPMICalculator(true)}
+                            />
+                          )}
                           <DxcButton
                             label="Tax Withholding"
                             mode="secondary"
