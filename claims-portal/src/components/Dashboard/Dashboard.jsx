@@ -18,6 +18,7 @@ import {
 } from '@dxc-technology/halstack-react';
 import { useClaims } from '../../contexts/ClaimsContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
+import { useDemoMode } from '../../contexts/DemoModeContext';
 import FastTrackBadge from '../shared/FastTrackBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
@@ -54,6 +55,8 @@ const Dashboard = ({ onClaimSelect }) => {
     fetchSLAAtRiskCases
   } = useWorkflow();
 
+  const { demoLineOfBusiness } = useDemoMode();
+
   // Fetch ServiceNow claims when authenticated
   const fetchServiceNowClaims = async () => {
     if (!serviceNowService.isAuthenticated()) return;
@@ -87,6 +90,12 @@ const Dashboard = ({ onClaimSelect }) => {
 
     return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
   }, []);
+
+  // Refresh claims when demo mode changes
+  useEffect(() => {
+    fetchClaims();
+    fetchSLAAtRiskCases();
+  }, [demoLineOfBusiness]);
 
   // Merge demo claims with ServiceNow claims (deduplicate by sysId)
   const allClaims = useMemo(() => {
@@ -1060,13 +1069,22 @@ const Dashboard = ({ onClaimSelect }) => {
                 placeholder="All Types"
                 value={typeFilter}
                 onChange={({ value }) => { setTypeFilter(value); setCurrentPage(1); }}
-                options={[
-                  { label: 'All Types', value: '' },
-                  { label: 'Death', value: 'death' },
-                  { label: 'Maturity', value: 'maturity' },
-                  { label: 'Surrender', value: 'surrender' },
-                  { label: 'Annuity', value: 'annuity' }
-                ]}
+                options={
+                  demoLineOfBusiness === 'PC' ? [
+                    { label: 'All Types', value: '' },
+                    { label: 'Auto Collision', value: 'auto_collision' },
+                    { label: 'Auto Comprehensive', value: 'auto_comprehensive' },
+                    { label: 'Property Damage', value: 'commercial_property' },
+                    { label: 'Homeowners', value: 'homeowners' },
+                    { label: 'Liability', value: 'liability' }
+                  ] : [
+                    { label: 'All Types', value: '' },
+                    { label: 'Death', value: 'death' },
+                    { label: 'Maturity', value: 'maturity' },
+                    { label: 'Surrender', value: 'surrender' },
+                    { label: 'Annuity', value: 'annuity' }
+                  ]
+                }
                 size="small"
               />
               <DxcSelect

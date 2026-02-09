@@ -21,11 +21,30 @@ export const ClaimStatus = {
  * Claim Type Enumeration
  */
 export const ClaimType = {
+  // L&A Types
   DEATH: 'death',
   MATURITY: 'maturity',
   SURRENDER: 'surrender',
   WITHDRAWAL: 'withdrawal',
-  DISABILITY: 'disability'
+  DISABILITY: 'disability',
+
+  // P&C Types
+  PROPERTY_DAMAGE: 'property_damage',
+  COMMERCIAL_PROPERTY: 'commercial_property',
+  HOMEOWNERS: 'homeowners',
+  AUTO_COLLISION: 'auto_collision',
+  AUTO_COMPREHENSIVE: 'auto_comprehensive',
+  LIABILITY: 'liability',
+  GENERAL_LIABILITY: 'general_liability',
+  WORKERS_COMP: 'workers_comp'
+};
+
+/**
+ * Line of Business Enumeration
+ */
+export const LineOfBusiness = {
+  LIFE_ANNUITY: 'LA',
+  PROPERTY_CASUALTY: 'PC'
 };
 
 /**
@@ -321,6 +340,7 @@ export const RequirementType = {
 export default {
   ClaimStatus,
   ClaimType,
+  LineOfBusiness,
   RoutingType,
   RequirementStatus,
   RequirementType

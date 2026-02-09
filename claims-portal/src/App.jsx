@@ -10,6 +10,7 @@ import ThemeSettings from './components/ThemeSettings/ThemeSettings';
 
 // Context Providers
 import { AppProvider, useApp } from './contexts/AppContext';
+import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
 import { ClaimsProvider } from './contexts/ClaimsContext';
 import { PolicyProvider } from './contexts/PolicyContext';
 import { WorkflowProvider } from './contexts/WorkflowContext';
@@ -24,6 +25,7 @@ function AppContent() {
 
   // Access global app context
   const { user } = useApp();
+  const { demoLineOfBusiness, toggleDemoMode } = useDemoMode();
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedClaim, setSelectedClaim] = useState(null);
@@ -104,6 +106,23 @@ function AppContent() {
           sideContent={(isResponsive) =>
             isResponsive ? null : (
               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+                    Demo Mode:
+                  </DxcTypography>
+                  <DxcButton
+                    label="L&A"
+                    mode={demoLineOfBusiness === 'LA' ? 'primary' : 'tertiary'}
+                    size="small"
+                    onClick={() => toggleDemoMode('LA')}
+                  />
+                  <DxcButton
+                    label="P&C"
+                    mode={demoLineOfBusiness === 'PC' ? 'primary' : 'tertiary'}
+                    size="small"
+                    onClick={() => toggleDemoMode('PC')}
+                  />
+                </DxcFlex>
                 <div
                   onClick={() => {
                     setIsThemeSettingsOpen(true);
@@ -190,15 +209,17 @@ function App() {
 
   return (
     <AppProvider>
-      <ClaimsProvider>
-        <PolicyProvider>
-          <WorkflowProvider>
-            <DocumentProvider>
-              <AppContent />
-            </DocumentProvider>
-          </WorkflowProvider>
-        </PolicyProvider>
-      </ClaimsProvider>
+      <DemoModeProvider>
+        <ClaimsProvider>
+          <PolicyProvider>
+            <WorkflowProvider>
+              <DocumentProvider>
+                <AppContent />
+              </DocumentProvider>
+            </WorkflowProvider>
+          </PolicyProvider>
+        </ClaimsProvider>
+      </DemoModeProvider>
     </AppProvider>
   );
 }

@@ -15,6 +15,7 @@ import cacheManager from '../utils/cacheManager';
 import { handleAPIError } from '../utils/errorHandler';
 import eventBus, { EventTypes } from '../sync/eventBus';
 import demoData from '../../data/demoData';
+import pcDemoData from '../../data/pcDemoData';
 
 const CMA_BASE_PATH = '/cma';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -54,12 +55,16 @@ export const getClaim = async (claimId, bypassCache = false) => {
   try {
     // DEMO MODE: Return demo data
     if (USE_DEMO_DATA) {
-      console.log(`[cmA] Getting demo claim: ${claimId}`);
+      // Read demo mode from localStorage to determine data source
+      const demoMode = localStorage.getItem('demoLineOfBusiness') || 'LA';
+      const dataSource = demoMode === 'PC' ? pcDemoData : demoData.claims;
+
+      console.log(`[cmA] Getting demo claim (${demoMode} mode): ${claimId}`);
 
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const claim = demoData.claims.find(c =>
+      const claim = dataSource.find(c =>
         c.id === claimId || c.claimNumber === claimId
       );
 
@@ -123,12 +128,16 @@ export const getClaims = async (filters = {}) => {
   try {
     // DEMO MODE: Return demo data
     if (USE_DEMO_DATA) {
-      console.log('[cmA] Returning demo claims data');
+      // Read demo mode from localStorage to determine data source
+      const demoMode = localStorage.getItem('demoLineOfBusiness') || 'LA';
+      const dataSource = demoMode === 'PC' ? pcDemoData : demoData.claims;
+
+      console.log(`[cmA] Returning demo claims data (${demoMode} mode)`);
 
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      let filteredClaims = [...demoData.claims];
+      let filteredClaims = [...dataSource];
 
       // Apply filters if provided
       if (filters.status) {
