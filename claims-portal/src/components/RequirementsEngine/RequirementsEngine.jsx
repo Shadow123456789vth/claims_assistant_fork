@@ -243,7 +243,7 @@ const RequirementsEngine = ({ claim, onGenerateRequirements, onGenerateLetter, o
               <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                 TOTAL REQUIREMENTS
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000">
                 {totalRequirements}
               </DxcTypography>
             </DxcFlex>

@@ -411,7 +411,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                             <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
                               TOTAL CLAIM AMOUNT
                             </DxcTypography>
-                            <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                            <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="#000000">
                               {formatCurrency(financialData.totalClaimAmount)}
                             </DxcTypography>
                           </DxcFlex>
