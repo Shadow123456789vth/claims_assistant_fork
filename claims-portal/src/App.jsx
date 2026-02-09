@@ -102,7 +102,7 @@ function AppContent() {
     <DxcApplicationLayout
       header={
         <DxcApplicationLayout.Header
-          content={
+          appTitle={
             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
               <img
                 src="/bloom-logo.jpg"
@@ -113,13 +113,7 @@ function AppContent() {
                   objectFit: 'contain'
                 }}
               />
-              <DxcTypography
-                fontSize="font-scale-04"
-                fontWeight="font-weight-bold"
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                Claims Assistant
-              </DxcTypography>
+              <span style={{ fontSize: '1.25rem', fontWeight: 600 }}>Claims Assistant</span>
             </DxcFlex>
           }
           sideContent={(isResponsive) =>
