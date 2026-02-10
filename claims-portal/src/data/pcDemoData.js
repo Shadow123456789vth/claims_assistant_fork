@@ -8,8 +8,10 @@ const pcDemoData = [
     type: 'commercial_property',
     lineOfBusiness: 'property_casualty',
     subType: 'water_damage',
-    status: 'under_review',
+    status: 'approved',
     priority: 'high',
+    approvedAt: '2026-01-15T08:15:00Z',
+    approvalMethod: 'STP - Straight-Through Processing',
     claimant: {
       firstName: 'Kim',
       lastName: 'Lee',
@@ -106,18 +108,51 @@ const pcDemoData = [
     // Intelligent FNOL (First Notice of Loss)
     intelligentFNOL: {
       aiRecommendedActions: [
-        'Immediate water mitigation required',
-        'Emergency contractor dispatch authorized',
-        'Document all damaged inventory with photos',
-        'Secure refrigeration units to prevent further loss'
+        'STP Approved - Emergency water mitigation pre-authorized',
+        'Payment scheduled for ACH transfer',
+        'Post-settlement audit recommended'
       ],
-      riskScore: 28,
+      riskScore: 8,
       fraudIndicators: [],
-      fraudReasoning: 'IoT sensor validation, weather data correlation, timely reporting, and business history support claim authenticity',
-      autoApproval: false,
-      requiresAdjuster: true,
-      straightThroughProcessing: false,
-      claimComplexity: 'moderate'
+      fraudReasoning: 'IoT sensor validation, weather data correlation, timely reporting, prior claim compliance, and proactive prevention measures support claim authenticity. All STP criteria met.',
+      autoApproval: true,
+      requiresAdjuster: false,
+      straightThroughProcessing: true,
+      stpEligible: true,
+      stpConfidenceScore: 94,
+      claimComplexity: 'simple',
+      stpCriteria: [
+        {
+          criterion: 'Storm Alert Sent',
+          met: true,
+          details: 'Winter storm alert was sent 48 hours before incident',
+          timestamp: '2026-01-13T03:45:00Z'
+        },
+        {
+          criterion: 'Risk Documentation',
+          met: true,
+          details: 'Property photos documented vulnerable pipe locations from prior claim',
+          priorClaimRef: 'CLM-2024-012847'
+        },
+        {
+          criterion: 'Smart Monitoring',
+          met: true,
+          details: 'Water sensor detected leak at 3:45 AM and sent immediate alert',
+          sensorVerified: true
+        },
+        {
+          criterion: 'Prevention Compliance',
+          met: true,
+          details: 'Insured followed all recommended prevention measures from prior claim',
+          complianceScore: 100
+        },
+        {
+          criterion: 'Rapid Response',
+          met: true,
+          details: 'Emergency mitigation began within 2 hours of detection',
+          responseTime: '1 hour 45 minutes'
+        }
+      ]
     },
 
     // Proactive Alerts
@@ -138,18 +173,40 @@ const pcDemoData = [
       }
     ],
 
+    routing: {
+      type: 'FASTTRACK',
+      method: 'STP',
+      reason: 'IoT-verified, prevention compliance, prior good history, all 5 STP criteria met',
+      score: 94,
+      eligible: true
+    },
+
     // Financial/Reserve Management (P&C specific)
     financial: {
       claimAmount: 87000,
       initialReserve: 90000,
-      currentReserve: 90000,
+      currentReserve: 0,
       policyLimit: 500000,
       deductible: 5000,
       businessInterruptionClaim: 12000,
       totalExposure: 87000,
-      paidToDate: 0,
-      reserveAdequacy: 'adequate',
-      lastReserveUpdate: '2026-01-15T10:00:00Z'
+      paidToDate: 87000,
+      reserveAdequacy: 'closed',
+      lastReserveUpdate: '2026-01-15T14:00:00Z',
+      payments: [
+        {
+          id: 'PAY-001-001',
+          amount: 87000,
+          payee: 'Bloom & Petals Florist',
+          status: 'Approved',
+          date: '2026-01-15',
+          approvalDate: '2026-01-15T08:15:00Z',
+          type: 'STP Auto-Approval',
+          method: 'ACH Transfer',
+          scheduledDate: '2026-01-17',
+          note: 'Fast-tracked due to IoT verification and prevention compliance'
+        }
+      ]
     },
 
     policy: {
@@ -167,13 +224,19 @@ const pcDemoData = [
     },
 
     workflow: {
-      currentStage: 'adjuster_review',
-      assignedTo: 'James Mitchell',
-      assignedDate: '2026-01-15T09:00:00Z',
+      currentStage: 'approved',
+      processingType: 'STP - Straight-Through Processing',
+      assignedTo: 'AI Auto-Approval System',
+      assignedDate: '2026-01-15T07:30:00Z',
+      approvedDate: '2026-01-15T08:15:00Z',
+      approvalDuration: '45 minutes',
+      humanReviewRequired: false,
+      postApprovalAudit: 'Scheduled',
       sla: {
-        responseTime: '4 hours',
-        resolutionTime: '15 days',
-        currentStatus: 'on_track'
+        responseTime: '< 1 hour',
+        resolutionTime: '< 1 day',
+        currentStatus: 'exceeded_target',
+        targetMet: true
       }
     },
 
@@ -197,12 +260,35 @@ const pcDemoData = [
     ],
 
     timeline: [
-      { date: '2026-01-15T02:30:00Z', event: 'IoT temperature alert triggered', actor: 'System' },
-      { date: '2026-01-15T03:45:00Z', event: 'Water leak sensor activated', actor: 'System' },
-      { date: '2026-01-15T07:30:00Z', event: 'Claim reported via mobile app', actor: 'Kim Lee' },
-      { date: '2026-01-15T09:00:00Z', event: 'Claim assigned to adjuster', actor: 'System' },
-      { date: '2026-01-15T10:00:00Z', event: 'Initial reserve set', actor: 'James Mitchell' }
-    ]
+      { date: '2026-01-13T03:45:00Z', event: 'Winter storm alert sent to insured', actor: 'Weather Monitoring System', note: 'STP Criterion 1 met' },
+      { date: '2026-01-15T02:30:00Z', event: 'IoT temperature alert triggered - Critical temp drop', actor: 'FloodStop Pro Sensor' },
+      { date: '2026-01-15T03:45:00Z', event: 'Water leak sensor activated - Immediate alert sent', actor: 'FloodStop Pro Sensor', note: 'STP Criterion 3 met' },
+      { date: '2026-01-15T04:00:00Z', event: 'Insured acknowledged alert, arrived on-site', actor: 'Kim Lee' },
+      { date: '2026-01-15T05:30:00Z', event: 'Emergency water mitigation started', actor: 'RapidDry Emergency Services', note: 'STP Criterion 5 met - Response within 2 hours' },
+      { date: '2026-01-15T07:30:00Z', event: 'Claim reported via mobile app with photos', actor: 'Kim Lee' },
+      { date: '2026-01-15T07:31:00Z', event: 'AI analysis initiated - STP evaluation', actor: 'AI Claims Engine' },
+      { date: '2026-01-15T07:32:00Z', event: 'Prior claim history retrieved (CLM-2024-012847)', actor: 'AI Claims Engine', note: 'STP Criterion 2 & 4 verified' },
+      { date: '2026-01-15T07:33:00Z', event: 'All 5 STP criteria validated - 94% confidence', actor: 'AI Claims Engine' },
+      { date: '2026-01-15T08:15:00Z', event: 'Claim auto-approved via STP', actor: 'AI Auto-Approval System', note: 'Straight-Through Processing completed' },
+      { date: '2026-01-15T08:16:00Z', event: 'Payment authorized - ACH transfer scheduled', actor: 'Payment System' },
+      { date: '2026-01-15T08:30:00Z', event: 'Approval notification sent to insured', actor: 'Communication System' },
+      { date: '2026-01-15T14:00:00Z', event: 'Post-approval audit scheduled', actor: 'Quality Assurance' }
+    ],
+
+    priorClaimHistory: {
+      hasHistory: true,
+      priorClaimNumber: 'CLM-2024-012847',
+      priorClaimDate: '2024-01-15',
+      priorClaimAmount: 15000,
+      priorClaimType: 'Water Damage - Frozen Pipe',
+      recommendationsFollowed: true,
+      preventionMeasures: [
+        'Installed FloodStop Pro water sensor (March 2024)',
+        'Insulated exposed basement pipes',
+        'Enrolled in Smart Business Monitoring Program',
+        'Completed winterization checklist'
+      ]
+    }
   },
 
   // Additional P&C Claims for Demo Variety
