@@ -5,7 +5,7 @@
  * Used throughout the app for displaying key metrics and statistics
  */
 
-import { DxcContainer, DxcFlex, DxcTypography } from '@dxc-technology/halstack-react';
+import { DxcFlex, DxcTypography } from '@dxc-technology/halstack-react';
 
 /**
  * @param {Object} props
@@ -55,9 +55,11 @@ const MetricCard = ({
   };
 
   return (
-    <DxcContainer
-      padding="var(--spacing-padding-m)"
-      style={{ backgroundColor: backgroundColors[variant] || backgroundColors.info }}
+    <div
+      style={{
+        padding: 'var(--spacing-padding-m)',
+        backgroundColor: backgroundColors[variant] || backgroundColors.info
+      }}
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
         {/* Label */}
@@ -92,7 +94,7 @@ const MetricCard = ({
           </DxcTypography>
         )}
       </DxcFlex>
-    </DxcContainer>
+    </div>
   );
 };
 

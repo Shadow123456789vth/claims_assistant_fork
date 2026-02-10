@@ -5,7 +5,6 @@
 
 import {
   DxcFlex,
-  DxcContainer,
   DxcTypography,
   DxcButton,
   DxcBadge,
@@ -71,7 +70,7 @@ const ClaimCard = ({ submission, isGridView, onSelect }) => {
   const hasSLA = isClaim && submission.workflow?.sla?.dueDate;
 
   return (
-    <DxcContainer
+    <div
       role="article"
       tabIndex={0}
       aria-label={`Claim ${displayId} for ${displayName}, Status ${displayStatus}, Type ${displayType}, Submitted ${displaySubmitted}`}
@@ -83,13 +82,15 @@ const ClaimCard = ({ submission, isGridView, onSelect }) => {
               minWidth: '400px',
               cursor: 'pointer',
               borderRadius: 'var(--border-radius-m)',
-              border: '1px solid var(--border-color-neutral-lighter)'
+              border: '1px solid var(--border-color-neutral-lighter)',
+              padding: 'var(--spacing-padding-m)'
             }
           : {
               backgroundColor: 'var(--color-bg-neutral-lighter)',
               cursor: 'pointer',
               borderRadius: 'var(--border-radius-m)',
-              border: '1px solid var(--border-color-neutral-lighter)'
+              border: '1px solid var(--border-color-neutral-lighter)',
+              padding: 'var(--spacing-padding-m)'
             }
       }
       onClick={() => onSelect(submission)}
@@ -190,7 +191,7 @@ const ClaimCard = ({ submission, isGridView, onSelect }) => {
           </div>
         </DxcFlex>
       </DxcInset>
-    </DxcContainer>
+    </div>
   );
 };
 
