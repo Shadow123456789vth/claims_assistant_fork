@@ -55,6 +55,15 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
     return 'neutral';
   };
 
+  const getRoleColor = (role) => {
+    const roleUpper = (role || '').toUpperCase();
+    if (roleUpper.includes('INSURED')) return 'purple';
+    if (roleUpper.includes('PRIMARY BENEFICIARY') || roleUpper.includes('BENEFICIARY')) return 'green';
+    if (roleUpper.includes('OWNER')) return 'blue';
+    if (roleUpper.includes('AGENT')) return 'orange';
+    return 'grey';
+  };
+
   // Group parties by type
   const partyGroups = {};
   parties.forEach(party => {
@@ -135,7 +144,7 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                             {party.name || 'Unknown'}
                           </DxcTypography>
                           <DxcFlex gap="var(--spacing-gap-xs)">
-                            <DxcBadge label={party.role || 'Unknown Role'} />
+                            <DxcBadge label={party.role || 'Unknown Role'} color={getRoleColor(party.role)} />
                             {party.source && (
                               <DxcChip label={`Source: ${party.source}`} size="small" />
                             )}
@@ -144,7 +153,7 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                       </DxcFlex>
                       <DxcFlex direction="column" alignItems="flex-end" gap="var(--spacing-gap-xs)">
                         {party.verificationStatus && (
-                          <DxcBadge label={party.verificationStatus} />
+                          <DxcBadge label={party.verificationStatus} color={getVerificationColor(party.verificationStatus)} />
                         )}
                         {party.verificationScore !== undefined && (
                           <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
@@ -248,7 +257,7 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                           <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                             CSLN Result
                           </DxcTypography>
-                          <DxcBadge label={party.cslnResult || 'N/A'} />
+                          <DxcBadge label={party.cslnResult || 'N/A'} color={getCSLNBadgeType(party.cslnResult)} />
                         </DxcFlex>
                       </DxcFlex>
                     )}

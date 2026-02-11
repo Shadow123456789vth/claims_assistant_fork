@@ -80,6 +80,20 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
     }).format(amount);
   };
 
+  const getBeneficiaryStatusColor = (status) => {
+    const statusUpper = (status || '').toUpperCase();
+    if (statusUpper === 'VERIFIED' || statusUpper === 'APPROVED') {
+      return 'green';
+    }
+    if (statusUpper === 'PENDING' || statusUpper === 'UNDER REVIEW') {
+      return 'orange';
+    }
+    if (statusUpper === 'REJECTED' || statusUpper === 'INVALID') {
+      return 'red';
+    }
+    return 'grey';
+  };
+
   // Extract financial data from claim
   const totalClaimAmount = claim.financial?.claimAmount || claim.financial?.totalClaimed || 0;
   const payments = claim.financial?.payments || claim.payments || [];
@@ -458,7 +472,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Amount</DxcTypography>
                                 <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000">{ben.amount}</DxcTypography>
                               </DxcFlex>
-                              <DxcBadge label={ben.status} />
+                              <DxcBadge label={ben.status} color={getBeneficiaryStatusColor(ben.status)} />
                             </DxcFlex>
                           </DxcFlex>
                         </DxcInset>

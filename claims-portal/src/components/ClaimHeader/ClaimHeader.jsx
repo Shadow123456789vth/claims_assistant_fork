@@ -49,6 +49,23 @@ const ClaimHeader = ({
     return '#000000';
   };
 
+  const getStatusColor = (status) => {
+    const statusUpper = (status || '').toUpperCase();
+    if (statusUpper === 'APPROVED' || statusUpper === 'CLOSED' || statusUpper === 'PAID') {
+      return 'green';
+    }
+    if (statusUpper === 'DENIED' || statusUpper === 'DECLINED' || statusUpper === 'REJECTED') {
+      return 'red';
+    }
+    if (statusUpper === 'UNDER_REVIEW' || statusUpper === 'PENDING' || statusUpper === 'IN_PROGRESS') {
+      return 'orange';
+    }
+    if (statusUpper === 'ON_HOLD' || statusUpper === 'SUSPENDED') {
+      return 'yellow';
+    }
+    return 'grey'; // default for unknown statuses
+  };
+
   const slaDate = claim.workflow?.sla?.dueDate ? new Date(claim.workflow.sla.dueDate) : null;
   const today = new Date();
   const daysRemaining = slaDate ? Math.ceil((slaDate - today) / (1000 * 60 * 60 * 24)) : null;
@@ -93,7 +110,7 @@ const ClaimHeader = ({
                 <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
                   {claim.claimNumber}
                 </DxcTypography>
-                <DxcBadge label={claim.status} />
+                <DxcBadge label={claim.status} color={getStatusColor(claim.status)} />
                 {claim.routing && (
                   <FastTrackBadge routing={claim.routing.type} size="medium" />
                 )}
