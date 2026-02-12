@@ -539,8 +539,9 @@ const Dashboard = ({ onClaimSelect }) => {
         {/* FastTrack Metrics Card */}
         <FastTrackMetricsCard claims={allClaims} />
 
-        {/* ServiceNow FNOL Claims Table - Hidden for now */}
-        {false && (snowClaims.length > 0 || snowLoading || snowError) && (
+        {/* ServiceNow FNOL Claims Table - DISABLED */}
+        {/* Uncomment below to re-enable ServiceNow integration
+        {(snowClaims.length > 0 || snowLoading || snowError) && (
           <ServiceNowClaimsTable
             snowClaims={snowClaims}
             snowLoading={snowLoading}
@@ -554,6 +555,7 @@ const Dashboard = ({ onClaimSelect }) => {
             }}
           />
         )}
+        */}
 
         {/* Department Inventory */}
         <DepartmentInventorySection
