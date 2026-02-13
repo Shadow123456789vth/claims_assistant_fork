@@ -62,7 +62,7 @@ const FastTrackMetricsCard = ({ claims }) => {
             flash_on
           </span>
           <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
-            FastTrack Performance
+            STP Performance
           </DxcTypography>
         </DxcFlex>
 
@@ -79,7 +79,7 @@ const FastTrackMetricsCard = ({ claims }) => {
           >
             <DxcFlex direction="column" gap="4px" alignItems="center">
               <DxcTypography fontSize="10px" fontWeight="font-weight-semibold">
-                FASTTRACK
+                STP
               </DxcTypography>
               <DxcTypography fontSize="24px" fontWeight="font-weight-semibold" color="#000000" style={{ lineHeight: '1' }}>
                 {fastTrackMetrics.count}

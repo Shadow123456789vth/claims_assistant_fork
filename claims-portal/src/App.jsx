@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DxcApplicationLayout, DxcFlex, DxcTypography, DxcButton } from '@dxc-technology/halstack-react';
 import Dashboard from './components/Dashboard/Dashboard';
 import ClaimsWorkbench from './components/ClaimsWorkbench/ClaimsWorkbench';
@@ -7,6 +7,7 @@ import FNOLWorkspace from './components/FNOLWorkspace/FNOLWorkspace';
 import PendingClaimsReview from './components/PendingClaimsReview/PendingClaimsReview';
 import RequirementsReceived from './components/RequirementsReceived/RequirementsReceived';
 import ThemeSettings from './components/ThemeSettings/ThemeSettings';
+import ContactPreferences from './components/ContactPreferences/ContactPreferences';
 
 // Context Providers
 import { AppProvider, useApp } from './contexts/AppContext';
@@ -31,6 +32,9 @@ function AppContent() {
   const [selectedClaim, setSelectedClaim] = useState(null);
   const [sidenavExpanded, setSidenavExpanded] = useState(true);
   const [isThemeSettingsOpen, setIsThemeSettingsOpen] = useState(false);
+  const [isContactPreferencesOpen, setIsContactPreferencesOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
 
   const handleClaimSelect = (claim) => {
     setSelectedClaim(claim);
@@ -43,6 +47,20 @@ function AppContent() {
       setSelectedClaim(null);
     }
   };
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    if (isProfileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isProfileMenuOpen]);
 
   const renderContent = () => {
     switch (currentView) {
@@ -180,21 +198,140 @@ function AppContent() {
                     {user?.email || ''}
                   </DxcTypography>
                 </DxcFlex>
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--color-bg-primary-lighter)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--color-fg-primary-stronger)",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                  }}
-                >
-                  {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                <div ref={profileMenuRef} style={{ position: 'relative' }}>
+                  <div
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Open user menu"
+                    aria-expanded={isProfileMenuOpen}
+                    aria-haspopup="true"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsProfileMenuOpen(!isProfileMenuOpen);
+                      }
+                    }}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--color-bg-primary-lighter)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "var(--color-fg-primary-stronger)",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-bg-primary-light)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-bg-primary-lighter)";
+                    }}
+                  >
+                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                  </div>
+
+                  {/* Profile Dropdown Menu */}
+                  {isProfileMenuOpen && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '40px',
+                        right: '0',
+                        minWidth: '200px',
+                        backgroundColor: 'var(--color-bg-neutral-lightest)',
+                        borderRadius: 'var(--border-radius-m)',
+                        boxShadow: 'var(--shadow-high-01)',
+                        border: '1px solid var(--color-border-neutral-lighter)',
+                        zIndex: 1000,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {/* Menu Item: Contact Preferences */}
+                      <div
+                        onClick={() => {
+                          setIsContactPreferencesOpen(true);
+                          setIsProfileMenuOpen(false);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setIsContactPreferencesOpen(true);
+                            setIsProfileMenuOpen(false);
+                          }
+                        }}
+                        style={{
+                          padding: '12px 16px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'var(--color-bg-neutral-lighter)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-neutral-strong)' }}>
+                          contact_phone
+                        </span>
+                        <DxcTypography fontSize="font-scale-02">
+                          Contact Preferences
+                        </DxcTypography>
+                      </div>
+
+                      {/* Divider */}
+                      <div style={{ height: '1px', backgroundColor: 'var(--color-border-neutral-lighter)' }} />
+
+                      {/* Menu Item: Profile Settings (Future) */}
+                      <div
+                        onClick={() => {
+                          // TODO: Implement profile settings
+                          setIsProfileMenuOpen(false);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setIsProfileMenuOpen(false);
+                          }
+                        }}
+                        style={{
+                          padding: '12px 16px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          transition: 'background-color 0.2s',
+                          opacity: 0.5
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'var(--color-bg-neutral-lighter)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-neutral-strong)' }}>
+                          account_circle
+                        </span>
+                        <DxcTypography fontSize="font-scale-02">
+                          Profile Settings
+                        </DxcTypography>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </DxcFlex>
             )
@@ -219,6 +356,10 @@ function AppContent() {
       onThemeChange={(colors) => {
         // Theme applied successfully
       }}
+    />
+    <ContactPreferences
+      isOpen={isContactPreferencesOpen}
+      onClose={() => setIsContactPreferencesOpen(false)}
     />
     </>
   );
