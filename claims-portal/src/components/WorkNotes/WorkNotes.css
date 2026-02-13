@@ -1,0 +1,37 @@
+.worknotes-header {
+  padding: var(--spacing-padding-m);
+  background-color: var(--color-bg-neutral-lighter);
+  border-top: 2px solid var(--color-fg-secondary-medium);
+  cursor: pointer;
+  user-select: none;
+}
+
+.worknotes-header:hover {
+  background-color: var(--color-bg-neutral-light);
+}
+
+.worknotes-header:focus-visible {
+  outline: 2px solid var(--color-fg-focus);
+  outline-offset: -2px;
+}
+
+.worknotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-s);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.worknotes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.worknotes-list::-webkit-scrollbar-track {
+  background: var(--color-bg-neutral-lighter);
+}
+
+.worknotes-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-fg-neutral-dark);
+  border-radius: 3px;
+}
