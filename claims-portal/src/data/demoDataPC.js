@@ -1,7 +1,7 @@
 /**
  * P&C Demo Data Generator
  *
- * Personal & Commercial Claims demo dataset:
+ * Property and Casualty Claims demo dataset:
  * - 5 hand-crafted showcase claims
  * - 10 seeded claims with varied loss types
  * - Fast Track routing (~35% of claims)

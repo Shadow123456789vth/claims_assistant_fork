@@ -1,7 +1,7 @@
 /**
  * Product Line Configuration
  * Controls demo data, terminology, and labels for each product line.
- * Toggle between L&A (Life & Annuity) and P&C (Personal & Commercial) in the Actions Menu.
+ * Toggle between L&A (Life & Annuity) and P&C (Property and Casualty) in the Actions Menu.
  */
 
 export const PRODUCT_LINES = {
@@ -54,7 +54,7 @@ export const productLineConfig = {
 
   [PRODUCT_LINES.PC]: {
     id: 'pc',
-    label: 'Personal & Commercial',
+    label: 'Property and Casualty',
     shortLabel: 'P&C',
     icon: 'directions_car',
     color: '#1B75BB',

@@ -212,7 +212,7 @@ function AppContent() {
                         <div style={{ display: 'flex', gap: '6px', paddingBottom: '8px' }}>
                           {[
                             { id: 'la', label: 'L&A', icon: 'favorite', title: 'Life & Annuity' },
-                            { id: 'pc', label: 'P&C', icon: 'directions_car', title: 'Personal & Commercial' }
+                            { id: 'pc', label: 'P&C', icon: 'directions_car', title: 'Property and Casualty' }
                           ].map(pl => (
                             <button
                               key={pl.id}
