@@ -430,9 +430,9 @@ const createPCShowcaseClaims = () => {
     const slaDate = new Date(createdDate.getTime() + 1 * DAY);
 
     const claim = {
-      id: 'pc-claim-6', claimNumber: 'CLM-PC-000006', status: ClaimStatus.APPROVED,
+      id: 'pc-claim-6', claimNumber: 'CLM-PC-000006', status: ClaimStatus.CLOSED,
       type: PCClaimType.COMMERCIAL_PROPERTY,
-      createdAt: createdDate.toISOString(), updatedAt: closedDate.toISOString(), closedAt: null,
+      createdAt: createdDate.toISOString(), updatedAt: closedDate.toISOString(), closedAt: closedDate.toISOString(),
       lossEvent: {
         dateOfLoss: lossDate.toISOString().split('T')[0], causeOfLoss: 'Winter storm — frozen pipe burst',
         lossLocation: 'Portland, OR', lossDescription: 'Extreme cold event (-5°F) caused pipe burst in commercial florist storage area. FloodStop Pro IoT sensors triggered immediate detection at 3:45 AM. Emergency mitigation started within 2 hours. Prior claim CLM-2024-012847 — all prevention measures followed.',

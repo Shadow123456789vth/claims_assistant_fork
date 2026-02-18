@@ -237,10 +237,36 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
             <DxcFlex gap="var(--spacing-gap-xl)">
               {claim.workflow?.sla?.dueDate && (() => {
                 const dueDate = new Date(claim.workflow.sla.dueDate);
+                const isClosed = !!claim.closedAt;
+
+                if (isClosed) {
+                  const closeDate = new Date(claim.closedAt);
+                  const metSla = closeDate <= dueDate;
+                  return (
+                    <>
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          SLA STATUS
+                        </DxcTypography>
+                        <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)'}>
+                          {metSla ? 'Met' : 'Missed'}
+                        </DxcTypography>
+                      </DxcFlex>
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          CLOSED DATE
+                        </DxcTypography>
+                        <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
+                          {closeDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                        </DxcTypography>
+                      </DxcFlex>
+                    </>
+                  );
+                }
+
                 const today = new Date();
                 const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
                 const color = daysRemaining <= 3 ? 'var(--color-fg-error-medium)' : daysRemaining <= 7 ? 'var(--color-fg-warning-medium)' : 'var(--color-fg-success-medium)';
-
                 return (
                   <>
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
@@ -344,9 +370,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
               {activeTab === 0 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                  {/* Top Row: Loss/Death Event and AI Insights */}
-                  <div className="dashboard-grid-top">
-                    {isPC ? (
+                  {/* Top Section: Loss/Death Event + AI Insights */}
+                  {isPC ? (
+                    <DxcFlex direction="column" gap="var(--spacing-gap-l)">
+                      {/* Loss Event — full width for P&C */}
                       <div style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', padding: 'var(--spacing-padding-l)', borderRadius: 'var(--border-radius-m)', border: '1px solid var(--color-border-neutral-lighter)' }}>
                         <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                           <DxcHeading level={3} text="Loss Event" />
@@ -392,7 +419,16 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                           )}
                         </DxcFlex>
                       </div>
-                    ) : (
+                      {/* AI Insights — full width for P&C so alerts have room to breathe */}
+                      <AIInsightsPanel
+                        claimData={{ riskScore: claim.aiInsights?.riskScore || 0 }}
+                        insights={claim.aiInsights?.alerts || []}
+                        onViewDetail={(insight) => console.log('View insight:', insight)}
+                        onDismiss={(insight) => console.log('Dismiss insight:', insight)}
+                      />
+                    </DxcFlex>
+                  ) : (
+                    <div className="dashboard-grid-top">
                       <DeathEventPanel
                         claimData={{
                           dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
@@ -409,16 +445,14 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         }}
                         onEdit={() => console.log('Edit death event')}
                       />
-                    )}
-                    <AIInsightsPanel
-                      claimData={{
-                        riskScore: claim.aiInsights?.riskScore || 0
-                      }}
-                      insights={claim.aiInsights?.alerts || []}
-                      onViewDetail={(insight) => console.log('View insight:', insight)}
-                      onDismiss={(insight) => console.log('Dismiss insight:', insight)}
-                    />
-                  </div>
+                      <AIInsightsPanel
+                        claimData={{ riskScore: claim.aiInsights?.riskScore || 0 }}
+                        insights={claim.aiInsights?.alerts || []}
+                        onViewDetail={(insight) => console.log('View insight:', insight)}
+                        onDismiss={(insight) => console.log('Dismiss insight:', insight)}
+                      />
+                    </div>
+                  )}
 
                   {/* Middle Row: Policy Summary and Party Management */}
                   <div className="dashboard-grid-middle">

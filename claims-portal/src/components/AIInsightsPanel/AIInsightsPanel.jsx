@@ -125,8 +125,8 @@ const AIInsightsPanel = ({ claimData, insights = [], onViewDetail, onDismiss }) 
           </DxcContainer>
         )}
 
-        {/* Alert Summary */}
-        {insights.length > 0 && (
+        {/* Alert Summary — only show when there are high or medium priority alerts */}
+        {(highAlerts.length > 0 || mediumAlerts.length > 0) && (
           <DxcFlex gap="var(--spacing-gap-m)">
             <DxcContainer
               padding="var(--spacing-padding-s)"
@@ -173,74 +173,130 @@ const AIInsightsPanel = ({ claimData, insights = [], onViewDetail, onDismiss }) 
         {/* Insights List */}
         {insights.length > 0 ? (
           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-            {insights.map((insight, index) => (
-              <div key={insight.id || index}>
-                {index > 0 && <DxcDivider />}
-                <DxcAlert
-                  type={getSeverityType(insight.severity)}
-                  inlineText={insight.title || insight.message}
-                  onClose={onDismiss ? () => onDismiss(insight) : undefined}
-                />
-                <DxcInset>
-                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                    {/* Insight Details */}
-                    <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
-                      <DxcChip
-                        label={insight.category || 'General'}
-                        icon="category"
-                        size="small"
-                      />
-                      <DxcChip
-                        label={`Confidence: ${insight.confidence || 0}%`}
-                        size="small"
-                      />
-                      {insight.timestamp && (
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                          Detected: {new Date(insight.timestamp).toLocaleString()}
-                        </DxcTypography>
-                      )}
-                    </DxcFlex>
+            {insights.map((insight, index) => {
+              const isLow = (insight.severity || '').toUpperCase() === 'LOW';
+              const severityColor = getSeverityColor(insight.severity);
 
-                    {/* Description */}
-                    {insight.description && (
-                      <DxcTypography fontSize="font-scale-01">
-                        {insight.description}
-                      </DxcTypography>
-                    )}
-
-                    {/* Recommendation */}
-                    {insight.recommendation && (
-                      <DxcContainer
-                        padding="var(--spacing-padding-s)"
-                        style={{ backgroundColor: 'var(--color-bg-info-lighter)' }}
-                      >
-                        <DxcFlex gap="var(--spacing-gap-xs)">
-                          <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-info-medium)' }}>
-                            lightbulb
+              if (isLow) {
+                // Compact card for LOW/informational insights
+                return (
+                  <div
+                    key={insight.id || index}
+                    style={{
+                      borderLeft: `3px solid ${severityColor}`,
+                      backgroundColor: 'var(--color-bg-neutral-lighter)',
+                      padding: 'var(--spacing-padding-s)',
+                      borderRadius: '0 4px 4px 0'
+                    }}
+                  >
+                    <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                      {/* Title + confidence */}
+                      <DxcFlex justifyContent="space-between" alignItems="flex-start" gap="var(--spacing-gap-s)">
+                        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                          <span className="material-icons" style={{ fontSize: '16px', color: severityColor, flexShrink: 0 }}>
+                            check_circle
                           </span>
-                          <DxcTypography fontSize="font-scale-01">
-                            <strong>Recommendation:</strong> {insight.recommendation}
+                          <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+                            {insight.title || insight.message}
                           </DxcTypography>
                         </DxcFlex>
-                      </DxcContainer>
-                    )}
-
-                    {/* Actions */}
-                    {onViewDetail && (
-                      <DxcFlex>
-                        <DxcButton
-                          label="View Details"
-                          mode="tertiary"
+                        <DxcChip
+                          label={`${insight.confidence || 0}%`}
                           size="small"
-                          icon="visibility"
-                          onClick={() => onViewDetail(insight)}
                         />
                       </DxcFlex>
-                    )}
-                  </DxcFlex>
-                </DxcInset>
-              </div>
-            ))}
+                      {/* Category + description */}
+                      <DxcFlex gap="var(--spacing-gap-s)" alignItems="flex-start" wrap="wrap">
+                        <DxcChip
+                          label={insight.category || 'General'}
+                          icon="category"
+                          size="small"
+                        />
+                        {insight.description && (
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)" style={{ flex: 1 }}>
+                            {insight.description}
+                          </DxcTypography>
+                        )}
+                      </DxcFlex>
+                      {/* Recommendation inline */}
+                      {insight.recommendation && (
+                        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="flex-start">
+                          <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-info-medium)', flexShrink: 0, marginTop: '2px' }}>
+                            lightbulb
+                          </span>
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                            {insight.recommendation}
+                          </DxcTypography>
+                        </DxcFlex>
+                      )}
+                    </DxcFlex>
+                  </div>
+                );
+              }
+
+              // Full prominent treatment for HIGH / MEDIUM alerts
+              return (
+                <div key={insight.id || index}>
+                  {index > 0 && <DxcDivider />}
+                  <DxcAlert
+                    type={getSeverityType(insight.severity)}
+                    inlineText={insight.title || insight.message}
+                    onClose={onDismiss ? () => onDismiss(insight) : undefined}
+                  />
+                  <DxcInset>
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                        <DxcChip
+                          label={insight.category || 'General'}
+                          icon="category"
+                          size="small"
+                        />
+                        <DxcChip
+                          label={`Confidence: ${insight.confidence || 0}%`}
+                          size="small"
+                        />
+                        {insight.timestamp && (
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                            Detected: {new Date(insight.timestamp).toLocaleString()}
+                          </DxcTypography>
+                        )}
+                      </DxcFlex>
+                      {insight.description && (
+                        <DxcTypography fontSize="font-scale-01">
+                          {insight.description}
+                        </DxcTypography>
+                      )}
+                      {insight.recommendation && (
+                        <DxcContainer
+                          padding="var(--spacing-padding-s)"
+                          style={{ backgroundColor: 'var(--color-bg-info-lighter)' }}
+                        >
+                          <DxcFlex gap="var(--spacing-gap-xs)">
+                            <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-info-medium)' }}>
+                              lightbulb
+                            </span>
+                            <DxcTypography fontSize="font-scale-01">
+                              <strong>Recommendation:</strong> {insight.recommendation}
+                            </DxcTypography>
+                          </DxcFlex>
+                        </DxcContainer>
+                      )}
+                      {onViewDetail && (
+                        <DxcFlex>
+                          <DxcButton
+                            label="View Details"
+                            mode="tertiary"
+                            size="small"
+                            icon="visibility"
+                            onClick={() => onViewDetail(insight)}
+                          />
+                        </DxcFlex>
+                      )}
+                    </DxcFlex>
+                  </DxcInset>
+                </div>
+              );
+            })}
           </DxcFlex>
         ) : (
           <DxcContainer
