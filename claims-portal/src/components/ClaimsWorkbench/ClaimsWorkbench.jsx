@@ -13,7 +13,7 @@ import {
   DxcChip,
   DxcDialog
 } from '@dxc-technology/halstack-react';
-import FastTrackBadge from '../shared/FastTrackBadge';
+import STPBadge from '../shared/STPBadge';
 import DocumentUpload from '../shared/DocumentUpload';
 import DocumentViewer from '../shared/DocumentViewer';
 import AnomalyDetection from '../shared/AnomalyDetection';
@@ -261,10 +261,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               })()}
               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
-                  FASTTRACK ELIGIBLE
+                  STP ELIGIBLE
                 </DxcTypography>
-                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'FASTTRACK' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
-                  {claim.routing?.type === 'FASTTRACK' ? 'Yes' : 'No'}
+                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'fasttrack' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
+                  {claim.routing?.type === 'fasttrack' ? 'Yes' : 'No'}
                 </DxcTypography>
               </DxcFlex>
             </DxcFlex>

@@ -18,7 +18,7 @@ import {
 } from '@dxc-technology/halstack-react';
 import { useClaims } from '../../contexts/ClaimsContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
-import FastTrackBadge from '../shared/FastTrackBadge';
+import STPBadge from '../shared/STPBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
 import serviceNowService from '../../services/api/serviceNowService';
@@ -98,8 +98,8 @@ const Dashboard = ({ onClaimSelect }) => {
     return [...demoClaims, ...uniqueSnowClaims];
   }, [claims, snowClaims]);
 
-  // Calculate FastTrack metrics
-  const fastTrackMetrics = useMemo(() => {
+  // Calculate STP metrics
+  const stpMetrics = useMemo(() => {
     if (!allClaims || allClaims.length === 0) {
       return {
         count: 0,
@@ -108,25 +108,25 @@ const Dashboard = ({ onClaimSelect }) => {
       };
     }
 
-    const fastTrackClaims = allClaims.filter(c => c.routing?.type === RoutingType.FASTTRACK);
-    const closedFastTrackClaims = fastTrackClaims.filter(c => c.status === ClaimStatus.CLOSED);
+    const stpClaims = allClaims.filter(c => c.routing?.type === RoutingType.STP);
+    const closedSTPClaims = stpClaims.filter(c => c.status === ClaimStatus.CLOSED);
 
-    // Calculate average days to close for FastTrack claims
+    // Calculate average days to close for STP claims
     let totalDays = 0;
-    closedFastTrackClaims.forEach(claim => {
+    closedSTPClaims.forEach(claim => {
       if (claim.createdAt && claim.closedAt) {
         const days = Math.floor((new Date(claim.closedAt) - new Date(claim.createdAt)) / (1000 * 60 * 60 * 24));
         totalDays += days;
       }
     });
 
-    const avgDaysToClose = closedFastTrackClaims.length > 0
-      ? Math.round(totalDays / closedFastTrackClaims.length)
+    const avgDaysToClose = closedSTPClaims.length > 0
+      ? Math.round(totalDays / closedSTPClaims.length)
       : 0;
 
     return {
-      count: fastTrackClaims.length,
-      percentage: allClaims.length > 0 ? Math.round((fastTrackClaims.length / allClaims.length) * 100) : 0,
+      count: stpClaims.length,
+      percentage: allClaims.length > 0 ? Math.round((stpClaims.length / allClaims.length) * 100) : 0,
       avgDaysToClose
     };
   }, [allClaims]);
@@ -706,7 +706,7 @@ const Dashboard = ({ onClaimSelect }) => {
           </div>
         </DxcFlex>
 
-        {/* FastTrack Metrics Card */}
+        {/* STP Metrics Card */}
         <div style={{
           backgroundColor: "var(--color-bg-neutral-lightest)",
           borderRadius: "var(--border-radius-m)",
@@ -715,11 +715,11 @@ const Dashboard = ({ onClaimSelect }) => {
         }}>
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-              <DxcHeading level={3} text="FastTrack Performance" />
-              <FastTrackBadge eligible={true} showLabel={false} size="small" />
+              <DxcHeading level={3} text="STP Performance" />
+              <STPBadge eligible={true} showLabel={false} size="small" />
             </DxcFlex>
             <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" justifyContent="space-between">
-              {/* FastTrack Claims */}
+              {/* STP Claims */}
               <div style={{ borderTop: "4px solid #0095FF", flex: "1" }}>
                 <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
                   <DxcFlex
@@ -735,7 +735,7 @@ const Dashboard = ({ onClaimSelect }) => {
                       color="var(--color-fg-neutral-stronger)"
                       textAlign="center"
                     >
-                      FASTTRACK CLAIMS
+                      STP CLAIMS
                     </DxcTypography>
                     <DxcTypography
                       fontSize="32px"
@@ -743,7 +743,7 @@ const Dashboard = ({ onClaimSelect }) => {
                       color="#0095FF"
                       textAlign="center"
                     >
-                      {fastTrackMetrics.count}
+                      {stpMetrics.count}
                     </DxcTypography>
                     <DxcTypography
                       fontSize="12px"
@@ -751,7 +751,7 @@ const Dashboard = ({ onClaimSelect }) => {
                       color="#0095FF"
                       textAlign="center"
                     >
-                      {fastTrackMetrics.percentage}% of total
+                      {stpMetrics.percentage}% of total
                     </DxcTypography>
                   </DxcFlex>
                 </div>
@@ -781,7 +781,7 @@ const Dashboard = ({ onClaimSelect }) => {
                       color="var(--color-fg-success-medium)"
                       textAlign="center"
                     >
-                      {fastTrackMetrics.avgDaysToClose}
+                      {stpMetrics.avgDaysToClose}
                     </DxcTypography>
                     <DxcTypography
                       fontSize="12px"
@@ -816,18 +816,18 @@ const Dashboard = ({ onClaimSelect }) => {
                     <DxcTypography
                       fontSize="32px"
                       fontWeight="font-weight-semibold"
-                      color={fastTrackMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
+                      color={stpMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
                       textAlign="center"
                     >
-                      {fastTrackMetrics.percentage >= 40 ? '✓' : '○'}
+                      {stpMetrics.percentage >= 40 ? '✓' : '○'}
                     </DxcTypography>
                     <DxcTypography
                       fontSize="12px"
                       fontWeight="font-weight-regular"
-                      color={fastTrackMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
+                      color={stpMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
                       textAlign="center"
                     >
-                      {fastTrackMetrics.percentage >= 40 ? 'Meeting goal' : 'Below target'}
+                      {stpMetrics.percentage >= 40 ? 'Meeting goal' : 'Below target'}
                     </DxcTypography>
                   </DxcFlex>
                 </div>
@@ -836,8 +836,8 @@ const Dashboard = ({ onClaimSelect }) => {
           </DxcFlex>
         </div>
 
-        {/* FNOL Claims Table */}
-        <div style={{
+        {/* FNOL Claims Table - only shown when connected to ServiceNow */}
+        {(snowConnected || !serviceNowService.useOAuth) && <div style={{
           backgroundColor: "var(--color-bg-neutral-lightest)",
           borderRadius: "var(--border-radius-m)",
           boxShadow: "var(--shadow-mid-04)",
@@ -853,36 +853,10 @@ const Dashboard = ({ onClaimSelect }) => {
                 {snowLoading && (
                   <DxcSpinner label="Loading..." mode="small" />
                 )}
-                {serviceNowService.useOAuth && (
-                  snowConnected ? (
-                    <DxcButton
-                      label="Disconnect"
-                      mode="tertiary"
-                      icon="link_off"
-                      size="small"
-                      onClick={() => { serviceNowService.clearAuth(); setSnowClaims([]); }}
-                    />
-                  ) : (
-                    <DxcButton
-                      label="Connect to ServiceNow"
-                      mode="secondary"
-                      icon="link"
-                      onClick={() => serviceNowService.startOAuthLogin()}
-                    />
-                  )
-                )}
               </DxcFlex>
             </DxcFlex>
 
-            {!snowConnected && serviceNowService.useOAuth ? (
-              <DxcContainer padding="var(--spacing-padding-m)" style={{ backgroundColor: "var(--color-bg-neutral-lighter)", borderRadius: "var(--border-radius-m)" }}>
-                <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                  <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
-                    Connect to ServiceNow to view FNOL claims from the global domain.
-                  </DxcTypography>
-                </DxcFlex>
-              </DxcContainer>
-            ) : snowClaims.length === 0 && !snowLoading ? (
+            {snowClaims.length === 0 && !snowLoading ? (
               <DxcContainer padding="var(--spacing-padding-m)" style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}>
                 <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
                   No FNOL records found. Check your ServiceNow connection configuration.
@@ -892,7 +866,7 @@ const Dashboard = ({ onClaimSelect }) => {
               <>
               <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                 {paginatedFnolClaims.map((claim, index) => {
-                  const hasFastTrack = claim.routing?.type === RoutingType.FASTTRACK;
+                  const hasSTP = claim.routing?.type === RoutingType.STP;
                   const hasSLA = claim.workflow?.sla?.dueDate;
 
                   return (
@@ -920,8 +894,8 @@ const Dashboard = ({ onClaimSelect }) => {
                               <DxcTypography fontSize="font-scale-03">
                                 {claim.claimant?.name || claim.insured?.name || 'N/A'}
                               </DxcTypography>
-                              {hasFastTrack && (
-                                <FastTrackBadge eligible={true} showLabel={true} size="small" />
+                              {hasSTP && (
+                                <STPBadge eligible={true} showLabel={true} size="small" />
                               )}
                             </DxcFlex>
                             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
@@ -1019,7 +993,7 @@ const Dashboard = ({ onClaimSelect }) => {
               </>
             )}
           </DxcFlex>
-        </div>
+        </div>}
 
         {/* Department Inventory */}
         <div style={{
@@ -1204,7 +1178,7 @@ const Dashboard = ({ onClaimSelect }) => {
                 const displaySubmitted = isClaim
                   ? new Date(submission.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
                   : submission.submitted;
-                const hasFastTrack = isClaim && submission.routing?.type === RoutingType.FASTTRACK;
+                const hasSTP = isClaim && submission.routing?.type === RoutingType.STP;
                 const isClosed = isClaim && (submission.status === 'closed' || submission.status === 'denied' || submission.status === 'approved');
                 const hasSLA = isClaim && submission.workflow?.sla?.dueDate;
 
@@ -1232,8 +1206,8 @@ const Dashboard = ({ onClaimSelect }) => {
                             <DxcTypography fontSize="font-scale-03">
                               {displayName}
                             </DxcTypography>
-                            {hasFastTrack && (
-                              <FastTrackBadge eligible={true} showLabel={true} size="small" />
+                            {hasSTP && (
+                              <STPBadge eligible={true} showLabel={true} size="small" />
                             )}
                             {isServiceNow && (
                               <DxcBadge label="ServiceNow" mode="contextual" color="info" />

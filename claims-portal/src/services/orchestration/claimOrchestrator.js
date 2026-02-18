@@ -11,7 +11,7 @@ import policyService from '../api/policyService';
 import fsoService from '../api/fsoService';
 import dmsService from '../api/dmsService';
 import requirementProcessor from '../requirements/requirementProcessor';
-import { evaluateFastTrackEligibility } from './routingEngine';
+import { evaluateSTPEligibility } from './routingEngine';
 import eventBus, { EventTypes } from '../sync/eventBus';
 import { handleAPIError, handleBusinessError } from '../utils/errorHandler';
 import { ClaimStatus, RoutingType } from '../../types/claim.types';
@@ -138,7 +138,7 @@ class ClaimOrchestrator {
       // Step 7: Generate Requirements (Decision Tables)
       await this.generateRequirements(claim, policy, deathVerification, null, [], result);
 
-      // Step 8: Evaluate Routing (FastTrack vs Standard)
+      // Step 8: Evaluate Routing (STP vs Standard)
       const routing = await this.evaluateRouting(claim, policy, deathVerification, result);
       result.metadata.routing = routing;
 
@@ -478,22 +478,22 @@ class ClaimOrchestrator {
   }
 
   /**
-   * Evaluate Routing (FastTrack vs Standard)
+   * Evaluate Routing (STP vs Standard)
    */
   async evaluateRouting(claim, policy, deathVerification, result) {
     try {
       console.log('[Orchestrator] Evaluating routing for claim:', claim.id);
 
       // Import routing engine
-      const { evaluateFastTrackEligibility } = await import('./routingEngine.js');
+      const { evaluateSTPEligibility } = await import('./routingEngine.js');
 
-      const eligibility = await evaluateFastTrackEligibility({
+      const eligibility = await evaluateSTPEligibility({
         claim,
         policy,
         deathVerification
       });
 
-      const routing = eligibility.eligible ? RoutingType.FASTTRACK : RoutingType.STANDARD;
+      const routing = eligibility.eligible ? RoutingType.STP : RoutingType.STANDARD;
 
       // Update claim routing in cmA
       await cmaService.updateClaim(claim.id, {
@@ -532,8 +532,8 @@ class ClaimOrchestrator {
       console.log('[Orchestrator] Assigning claim:', claim.id);
 
       // Determine queue based on routing
-      const queueName = routing.routing === RoutingType.FASTTRACK
-        ? 'FastTrack Queue'
+      const queueName = routing.routing === RoutingType.STP
+        ? 'STP Queue'
         : 'Standard Queue';
 
       // TODO: Implement intelligent assignment algorithm
@@ -584,7 +584,7 @@ class ClaimOrchestrator {
       if (allSatisfied) {
         console.log('[Orchestrator] All mandatory requirements satisfied for claim:', claimId);
 
-        // Re-evaluate FastTrack eligibility
+        // Re-evaluate STP eligibility
         const claim = await cmaService.getClaim(claimId);
         // Note: Routing re-evaluation could trigger workflow state change
       }

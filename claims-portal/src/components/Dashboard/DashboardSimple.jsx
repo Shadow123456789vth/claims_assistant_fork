@@ -75,7 +75,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
       id: 'CLM-2026-003',
       insuredName: 'Robert James Williams',
       claimType: 'Death Claim',
-      status: 'FastTrack Eligible',
+      status: 'STP Eligible',
       productType: 'Universal Life',
       claimAmount: '$750,000',
       dateOfLoss: '01/10/2026',
@@ -112,7 +112,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
         return '#FF6B00';
       case 'In Review':
         return '#0095FF';
-      case 'FastTrack Eligible':
+      case 'STP Eligible':
         return '#24A148';
       case 'Approved':
         return '#24A148';
@@ -129,7 +129,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
     { label: 'All Claims', value: 'all' },
     { label: 'Pending Review', value: 'Pending Review' },
     { label: 'In Review', value: 'In Review' },
-    { label: 'FastTrack Eligible', value: 'FastTrack Eligible' },
+    { label: 'STP Eligible', value: 'STP Eligible' },
     { label: 'Pending Requirements', value: 'Pending Requirements' }
   ];
 

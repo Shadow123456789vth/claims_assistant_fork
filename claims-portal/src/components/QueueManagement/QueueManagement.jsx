@@ -34,7 +34,7 @@ const QueueManagement = () => {
       icon: '⚠️'
     },
     {
-      title: 'FASTTRACK READY',
+      title: 'STP READY',
       value: '12',
       subtitle: 'Auto-approve eligible',
       color: 'var(--color-green-700)',
@@ -80,7 +80,7 @@ const QueueManagement = () => {
       id: 'CLM-2026-009',
       insuredName: 'James Wilson',
       claimType: 'Death Claim',
-      status: 'FastTrack Eligible',
+      status: 'STP Eligible',
       priority: 'Low',
       assignedTo: 'Sarah Johnson',
       daysOpen: '3',
@@ -106,7 +106,7 @@ const QueueManagement = () => {
         return 'var(--color-orange-700)';
       case 'In Review':
         return 'var(--color-blue-700)';
-      case 'FastTrack Eligible':
+      case 'STP Eligible':
         return 'var(--color-green-700)';
       case 'Pending Requirements':
         return 'var(--color-red-700)';
@@ -186,7 +186,7 @@ const QueueManagement = () => {
             { label: 'My Queue', value: 'myqueue' },
             { label: 'Team Queue', value: 'team' },
             { label: 'SLA at Risk', value: 'sla' },
-            { label: 'FastTrack', value: 'fasttrack' }
+            { label: 'STP', value: 'fasttrack' }
           ].map((queue) => (
             <button
               key={queue.value}

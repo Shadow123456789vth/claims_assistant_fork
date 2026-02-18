@@ -372,7 +372,7 @@ const Dashboard = ({ onClaimSelect }) => {
                     startIcon={<SpeedIcon />}
                     sx={{ justifyContent: 'flex-start', py: 1.5 }}
                   >
-                    Fast Track Review
+                    STP Review
                   </Button>
                   <Button
                     variant="outlined"

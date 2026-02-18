@@ -6,7 +6,7 @@ import {
   DxcButton,
   DxcChip
 } from '@dxc-technology/halstack-react';
-import FastTrackBadge from '../shared/FastTrackBadge';
+import STPBadge from '../shared/STPBadge';
 import './ClaimHeader.css';
 
 /**
@@ -15,7 +15,7 @@ import './ClaimHeader.css';
  * Displays at top of all claim screens showing:
  * - Claim number and status
  * - Insured/claimant name
- * - FastTrack indicator
+ * - STP indicator
  * - Key metrics (SLA, Days Open, Amount)
  * - Quick actions (Hold, Approve, Deny, Assign)
  *
@@ -84,7 +84,7 @@ const ClaimHeader = ({
                 </DxcTypography>
                 <DxcBadge label={claim.status} />
                 {claim.routing && (
-                  <FastTrackBadge routing={claim.routing.type} size="medium" />
+                  <STPBadge routing={claim.routing.type} size="medium" />
                 )}
               </DxcFlex>
 

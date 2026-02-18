@@ -210,8 +210,8 @@ const PLAYBOOKS = {
   },
 
   [PlaybookType.DEATH_CLAIM_FASTTRACK]: {
-    name: 'Death Claim - FastTrack',
-    description: 'Accelerated workflow for FastTrack-eligible claims',
+    name: 'Death Claim - STP',
+    description: 'Accelerated workflow for STP-eligible claims',
     steps: [
       {
         id: 'auto_verify_death',

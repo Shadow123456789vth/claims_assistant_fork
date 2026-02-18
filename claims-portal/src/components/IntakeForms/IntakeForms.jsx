@@ -867,10 +867,10 @@ const IntakeForms = () => {
 
               <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
                 <DxcTypography fontWeight="font-weight-semibold">
-                  3. FastTrack Processing
+                  3. STP (Straight Through Processing)
                 </DxcTypography>
                 <DxcTypography color="var(--color-fg-neutral-strong)">
-                  Eligible claims will be processed through our FastTrack system with a 10-day target
+                  Eligible claims will be processed through our STP system with a 10-day target
                 </DxcTypography>
               </DxcFlex>
 

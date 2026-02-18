@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { DxcApplicationLayout, DxcFlex, DxcTypography, DxcButton } from '@dxc-technology/halstack-react';
 import Dashboard from './components/Dashboard/Dashboard';
 import ClaimsWorkbench from './components/ClaimsWorkbench/ClaimsWorkbench';
@@ -33,6 +33,30 @@ function AppContent() {
   const [selectedClaim, setSelectedClaim] = useState(null);
   const [sidenavExpanded, setSidenavExpanded] = useState(false); // Start minimized
   const [isThemeSettingsOpen, setIsThemeSettingsOpen] = useState(false);
+  const [snowConnected, setSnowConnected] = useState(serviceNowService.isAuthenticated());
+  const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+  const actionsMenuRef = useRef(null);
+
+  // Track ServiceNow connection state
+  useEffect(() => {
+    const unsubscribe = serviceNowService.onAuthChange((authenticated) => {
+      setSnowConnected(authenticated);
+    });
+    return () => unsubscribe?.();
+  }, []);
+
+  // Close actions menu on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (actionsMenuRef.current && !actionsMenuRef.current.contains(e.target)) {
+        setActionsMenuOpen(false);
+      }
+    };
+    if (actionsMenuOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [actionsMenuOpen]);
 
   const handleClaimSelect = async (claim) => {
     console.log('[App] handleClaimSelect called with claim:', claim);
@@ -135,6 +159,88 @@ function AppContent() {
           sideContent={(isResponsive) =>
             isResponsive ? null : (
               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                {/* Actions Menu */}
+                <div ref={actionsMenuRef} style={{ position: 'relative' }}>
+                  <DxcButton
+                    label="Actions"
+                    mode="secondary"
+                    icon="expand_more"
+                    iconPosition="after"
+                    size="small"
+                    onClick={() => setActionsMenuOpen(prev => !prev)}
+                  />
+                  {actionsMenuOpen && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 6px)',
+                      right: 0,
+                      minWidth: '220px',
+                      backgroundColor: 'var(--color-bg-neutral-lightest)',
+                      border: '1px solid var(--border-color-neutral-lighter)',
+                      borderRadius: 'var(--border-radius-m)',
+                      boxShadow: 'var(--shadow-mid-04)',
+                      zIndex: 1000,
+                      overflow: 'hidden'
+                    }}>
+                      {serviceNowService.useOAuth && (
+                        snowConnected ? (
+                          <button
+                            onClick={() => {
+                              serviceNowService.clearAuth();
+                              setSnowConnected(false);
+                              setActionsMenuOpen(false);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '10px 16px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              color: 'var(--color-fg-neutral-dark)',
+                              textAlign: 'left',
+                              transition: 'background 0.15s'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-neutral-lighter)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                          >
+                            <span className="material-icons" style={{ fontSize: '18px', color: 'var(--color-fg-error-medium)' }}>link_off</span>
+                            Disconnect from ServiceNow
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              serviceNowService.startOAuthLogin();
+                              setActionsMenuOpen(false);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '10px 16px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              color: 'var(--color-fg-neutral-dark)',
+                              textAlign: 'left',
+                              transition: 'background 0.15s'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-neutral-lighter)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                          >
+                            <span className="material-icons" style={{ fontSize: '18px', color: 'var(--color-fg-success-medium)' }}>link</span>
+                            Connect to ServiceNow
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
                 <div
                   onClick={() => {
                     setIsThemeSettingsOpen(true);

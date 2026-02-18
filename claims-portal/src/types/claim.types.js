@@ -29,10 +29,10 @@ export const ClaimType = {
 };
 
 /**
- * Routing Type for FastTrack eligibility
+ * Routing Type for STP eligibility
  */
 export const RoutingType = {
-  FASTTRACK: 'fasttrack',
+  STP: 'fasttrack',
   STANDARD: 'standard',
   EXPEDITED: 'expedited',
   SIU: 'siu'

@@ -4,7 +4,7 @@
  * Generates deterministic sample claims with full orchestration metadata:
  * - Uses seeded PRNG for reproducible data across page loads
  * - 5 hand-crafted showcase claims + 15 seeded claims
- * - FastTrack routing (40% of claims)
+ * - STP routing (40% of claims)
  * - Workflow/SLA data
  * - Requirements with various statuses
  * - Policy information
@@ -63,39 +63,39 @@ const PROOF_TYPES = ['Death Certificate', 'Coroner Report', 'Hospital Record', '
 const generateRequirements = (claim) => {
   const requirements = [];
   const createdAtDate = typeof claim.createdAt === 'string' ? new Date(claim.createdAt) : claim.createdAt;
-  const isFastTrack = claim.routing?.type === RoutingType.FASTTRACK;
+  const isSTP = claim.routing?.type === RoutingType.STP;
 
   // CLAIM LEVEL
   requirements.push({
     id: `${claim.id}-req-1`, level: 'claim', type: RequirementType.DEATH_CERTIFICATE,
     name: 'Certified Death Certificate', description: 'Official death certificate from state vital records',
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 7 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 2 * 86400000).toISOString() : null,
-    documents: isFastTrack ? [{ id: `doc-${claim.id}-1`, name: 'death_certificate.pdf' }] : [],
-    metadata: { confidenceScore: isFastTrack ? 0.96 : null, idpClassification: isFastTrack ? 'death_certificate' : null }
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 2 * 86400000).toISOString() : null,
+    documents: isSTP ? [{ id: `doc-${claim.id}-1`, name: 'death_certificate.pdf' }] : [],
+    metadata: { confidenceScore: isSTP ? 0.96 : null, idpClassification: isSTP ? 'death_certificate' : null }
   });
 
   requirements.push({
     id: `${claim.id}-req-2`, level: 'claim', type: RequirementType.CLAIMANT_STATEMENT,
     name: 'Claimant Statement of Claim', description: 'Signed statement of claim form',
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.IN_REVIEW, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.IN_REVIEW, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 7 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
-    documents: isFastTrack
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
+    documents: isSTP
       ? [{ id: `doc-${claim.id}-2`, name: 'claimant_statement.pdf' }]
       : [{ id: `doc-${claim.id}-2`, name: 'claimant_statement_draft.pdf' }],
-    metadata: { confidenceScore: isFastTrack ? 0.93 : 0.78, reason: isFastTrack ? null : 'Signature verification in progress' }
+    metadata: { confidenceScore: isSTP ? 0.93 : 0.78, reason: isSTP ? null : 'Signature verification in progress' }
   });
 
   requirements.push({
     id: `${claim.id}-req-3`, level: 'claim', type: RequirementType.PROOF_OF_IDENTITY,
     name: 'Government-Issued Photo ID', description: "Driver's license, passport, or state ID",
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 7 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
-    documents: isFastTrack ? [{ id: `doc-${claim.id}-3`, name: 'drivers_license.pdf' }] : [],
-    metadata: isFastTrack ? { confidenceScore: 0.95 } : {}
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
+    documents: isSTP ? [{ id: `doc-${claim.id}-3`, name: 'drivers_license.pdf' }] : [],
+    metadata: isSTP ? { confidenceScore: 0.95 } : {}
   });
 
   // POLICY LEVEL
@@ -113,31 +113,31 @@ const generateRequirements = (claim) => {
   requirements.push({
     id: `${claim.id}-req-7`, level: 'party', type: 'BENEFICIARY_VERIFICATION',
     name: 'Beneficiary Identity Verification', description: 'SSN verification and identity confirmation',
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.IN_REVIEW, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.IN_REVIEW, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 7 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
-    documents: isFastTrack ? [{ id: `doc-${claim.id}-7`, name: 'beneficiary_ssn_card.pdf' }] : [],
-    metadata: { confidenceScore: isFastTrack ? 0.97 : 0.82, partyId: claim.parties?.[1]?.id, partyName: claim.claimant?.name }
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 1 * 86400000).toISOString() : null,
+    documents: isSTP ? [{ id: `doc-${claim.id}-7`, name: 'beneficiary_ssn_card.pdf' }] : [],
+    metadata: { confidenceScore: isSTP ? 0.97 : 0.82, partyId: claim.parties?.[1]?.id, partyName: claim.claimant?.name }
   });
 
   requirements.push({
     id: `${claim.id}-req-8`, level: 'party', type: 'TAX_FORM',
     name: 'IRS Form W-9', description: 'W-9 form for tax reporting and 1099 generation',
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 10 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 3 * 86400000).toISOString() : null,
-    documents: isFastTrack ? [{ id: `doc-${claim.id}-8`, name: 'w9_form.pdf' }] : [],
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 3 * 86400000).toISOString() : null,
+    documents: isSTP ? [{ id: `doc-${claim.id}-8`, name: 'w9_form.pdf' }] : [],
     metadata: { partyId: claim.parties?.[1]?.id, partyName: claim.claimant?.name }
   });
 
   requirements.push({
     id: `${claim.id}-req-9`, level: 'party', type: 'PAYMENT_ELECTION',
     name: 'Payment Election Form', description: 'ACH direct deposit or check payment selection',
-    status: isFastTrack ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
+    status: isSTP ? RequirementStatus.SATISFIED : RequirementStatus.PENDING, isMandatory: true,
     dueDate: new Date(createdAtDate.getTime() + 10 * 86400000).toISOString(),
-    satisfiedDate: isFastTrack ? new Date(createdAtDate.getTime() + 2 * 86400000).toISOString() : null,
-    documents: isFastTrack ? [{ id: `doc-${claim.id}-9`, name: 'payment_election.pdf' }] : [],
-    metadata: { partyId: claim.parties?.[1]?.id, partyName: claim.claimant?.name, paymentMethod: isFastTrack ? 'ACH' : 'Not selected' }
+    satisfiedDate: isSTP ? new Date(createdAtDate.getTime() + 2 * 86400000).toISOString() : null,
+    documents: isSTP ? [{ id: `doc-${claim.id}-9`, name: 'payment_election.pdf' }] : [],
+    metadata: { partyId: claim.parties?.[1]?.id, partyName: claim.claimant?.name, paymentMethod: isSTP ? 'ACH' : 'Not selected' }
   });
 
   return requirements;
@@ -152,8 +152,8 @@ const generateTimeline = (claim) => {
   events.push({ id: `${claim.id}-event-1`, timestamp: claim.createdAt, type: 'claim.created', source: 'cma', user: { name: 'System', role: 'system' }, description: 'Claim submitted via online portal', metadata: { channel: 'beneficiary_portal' } });
   events.push({ id: `${claim.id}-event-2`, timestamp: new Date(new Date(claim.createdAt).getTime() + 5 * 60000).toISOString(), type: 'policy.verified', source: 'policy', user: { name: 'System', role: 'system' }, description: 'Policy verified in Policy Admin system', metadata: { policyNumber: claim.policy.policyNumber, status: 'in-force' } });
   events.push({ id: `${claim.id}-event-3`, timestamp: new Date(new Date(claim.createdAt).getTime() + 10 * 60000).toISOString(), type: 'death.verified', source: 'verification', user: { name: 'LexisNexis', role: 'external' }, description: 'Death verification completed (3-point match)', metadata: { confidence: 0.95, matchPoints: ['ssn', 'name', 'dob'] } });
-  if (claim.routing?.type === RoutingType.FASTTRACK) {
-    events.push({ id: `${claim.id}-event-4`, timestamp: new Date(new Date(claim.createdAt).getTime() + 15 * 60000).toISOString(), type: 'routing.fasttrack', source: 'fso', user: { name: 'Routing Engine', role: 'system' }, description: 'Claim routed to FastTrack processing', metadata: { score: claim.routing.score, eligible: true } });
+  if (claim.routing?.type === RoutingType.STP) {
+    events.push({ id: `${claim.id}-event-4`, timestamp: new Date(new Date(claim.createdAt).getTime() + 15 * 60000).toISOString(), type: 'routing.stp', source: 'fso', user: { name: 'Routing Engine', role: 'system' }, description: 'Claim routed to STP processing', metadata: { score: claim.routing.score, eligible: true } });
   }
   events.push({ id: `${claim.id}-event-5`, timestamp: new Date(new Date(claim.createdAt).getTime() + 20 * 60000).toISOString(), type: 'requirements.generated', source: 'requirements', user: { name: 'Decision Table Engine', role: 'system' }, description: `${claim.requirements?.length || 3} requirements generated`, metadata: { mandatoryCount: 3, optionalCount: 0 } });
   return events;
@@ -229,7 +229,7 @@ const createShowcaseClaims = () => {
     claims.push(claim);
   }
 
-  // ---- CLAIM 2: FastTrack, CLOSED, clean claim ----
+  // ---- CLAIM 2: STP, CLOSED, clean claim ----
   {
     const createdDate = new Date(NOW.getTime() - 12 * DAY);
     const deathDate = new Date(NOW.getTime() - 18 * DAY);
@@ -256,7 +256,7 @@ const createShowcaseClaims = () => {
       aiInsights: { riskScore: 15, alerts: [] },
       financial: { claimAmount, reserve: 0, amountPaid: claimAmount, pmiState: 'FL', pmiRate: 0.10, pmiDays, interestAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, federalTaxRate: 24, stateTaxRate: 5.75, taxableAmount: interestAmount, federalTaxWithheld: Math.floor(interestAmount * 0.24), stateTaxWithheld: Math.floor(interestAmount * 0.0575), taxWithheld: Math.floor(interestAmount * 0.2975), percentage: 100, currency: 'USD',
         payments: [{ id: 'payment-2-1', paymentNumber: 'PAY-000002', payeeId: 'party-2-2', payeeName: 'Margaret Mitchell', payeeSSN: maskedSSN('6183'), payeeAddress: '4521 Palm Court, Tampa, FL 33602', benefitAmount: claimAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, pmiCalculation: { state: 'FL', rate: 10, dateOfDeath: deathDate.toISOString().split('T')[0], settlementDate: closedDate.toISOString().split('T')[0], days: pmiDays, amount: interestAmount }, taxWithholding: { federalRate: 24, stateRate: 5.75, taxableAmount: interestAmount, federalWithheld: Math.floor(interestAmount * 0.24), stateWithheld: Math.floor(interestAmount * 0.0575), totalWithheld: Math.floor(interestAmount * 0.2975) }, taxWithheld: Math.floor(interestAmount * 0.2975), netPayment: claimAmount + interestAmount - Math.floor(interestAmount * 0.2975), percentage: 100, paymentMethod: 'ACH', bankInfo: { accountType: 'Checking', routingNumber: '063107513', accountNumberLast4: '****7829' }, scheduledDate: closedDate.toISOString().split('T')[0], paymentDate: closedDate.toISOString().split('T')[0], status: 'Completed', glPosting: { posted: true, postingDate: new Date(closedDate.getTime() + DAY).toISOString().split('T')[0], batchNumber: 'GL-482910', accountCodes: { benefit: '5000-1000', pmi: '5000-1100', tax: '2000-3000' } }, tax1099: { generated: true, year: NOW.getFullYear(), formType: '1099-MISC', box3Amount: interestAmount } }] },
-      routing: { type: RoutingType.FASTTRACK, score: 92, eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } },
+      routing: { type: RoutingType.STP, score: 92, eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } },
       workflow: { fsoCase: 'FSO-CLM-000002', currentTask: null, assignedTo: null, daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: Math.ceil((slaDate - closedDate) / DAY), atRisk: false } }
     };
     claim.sysId = 'demo-sys-id-2'; claim.fnolNumber = 'FNOL0000002';
@@ -264,7 +264,7 @@ const createShowcaseClaims = () => {
     claims.push(claim);
   }
 
-  // ---- CLAIM 3: NEW, FastTrack eligible, just submitted ----
+  // ---- CLAIM 3: NEW, STP eligible, just submitted ----
   {
     const createdDate = new Date(NOW.getTime() - 2 * DAY);
     const deathDate = new Date(NOW.getTime() - 5 * DAY);
@@ -287,7 +287,7 @@ const createShowcaseClaims = () => {
       ],
       aiInsights: { riskScore: 22, alerts: [] },
       financial: { claimAmount: 175000, reserve: 157500, amountPaid: 0, pmiState: 'TX', pmiRate: 0.10, pmiDays: Math.floor((NOW - deathDate) / DAY), interestAmount: 0, netBenefitProceeds: 175000, netBenefitPMI: 0, federalTaxRate: 24, stateTaxRate: 0, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0, percentage: 100, currency: 'USD', payments: [] },
-      routing: { type: RoutingType.FASTTRACK, score: 91, eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } },
+      routing: { type: RoutingType.STP, score: 91, eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } },
       workflow: { fsoCase: 'FSO-CLM-000003', currentTask: 'Review Requirements', assignedTo: 'Sarah Johnson', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: false } }
     };
     claim.sysId = 'demo-sys-id-3'; claim.fnolNumber = 'FNOL0000003';
@@ -366,7 +366,7 @@ const createShowcaseClaims = () => {
 // ============================================================
 // Generate remaining 15 claims with seeded PRNG
 // ============================================================
-const generateSeededClaim = (index, isFastTrack) => {
+const generateSeededClaim = (index, isSTP) => {
   const createdDate = seededDate(new Date(NOW.getTime() - 30 * DAY), new Date(NOW.getTime() - 1 * DAY));
   const insuredName = seeded() > 0.5 ? seededMaleName() : seededFemaleName();
   const claimantName = seeded() > 0.5 ? seededFemaleName() : seededMaleName();
@@ -376,14 +376,14 @@ const generateSeededClaim = (index, isFastTrack) => {
   const policyIssueDate = seededDate(new Date(NOW.getTime() - 10 * 365 * DAY), new Date(NOW.getTime() - 3 * 365 * DAY));
   const deathDate = seededDate(new Date(NOW.getTime() - 45 * DAY), new Date(NOW.getTime() - 3 * DAY));
 
-  const statusOptions = isFastTrack
+  const statusOptions = isSTP
     ? [ClaimStatus.CLOSED, ClaimStatus.CLOSED, ClaimStatus.APPROVED, ClaimStatus.UNDER_REVIEW]
     : [ClaimStatus.NEW, ClaimStatus.UNDER_REVIEW, ClaimStatus.UNDER_REVIEW, ClaimStatus.APPROVED, ClaimStatus.PENDING_REQUIREMENTS];
   const status = seededPick(statusOptions);
   const isClosed = status === ClaimStatus.CLOSED;
-  const closedDate = isClosed ? new Date(createdDate.getTime() + (isFastTrack ? 7 : 25) * DAY) : null;
+  const closedDate = isClosed ? new Date(createdDate.getTime() + (isSTP ? 7 : 25) * DAY) : null;
   const daysOpen = Math.floor(((isClosed ? closedDate : NOW) - createdDate) / DAY);
-  const slaDays = isFastTrack ? 10 : 30;
+  const slaDays = isSTP ? 10 : 30;
   const slaDate = new Date(createdDate.getTime() + slaDays * DAY);
   const daysToSla = isClosed ? Math.ceil((slaDate - closedDate) / DAY) : Math.ceil((slaDate - NOW) / DAY);
   const state = seededPick(STATES);
@@ -393,7 +393,7 @@ const generateSeededClaim = (index, isFastTrack) => {
   const causeMap = { 'Natural': 'Natural Causes', 'Accident': 'Accidental Injury', 'Pending': 'Under Investigation' };
 
   const pmiDays = isClosed ? Math.floor((closedDate - deathDate) / DAY) : Math.floor((NOW - deathDate) / DAY);
-  const interestAmount = isClosed ? Math.floor((claimAmount * (isFastTrack ? 0.10 : 0.08) * pmiDays) / 365) : 0;
+  const interestAmount = isClosed ? Math.floor((claimAmount * (isSTP ? 0.10 : 0.08) * pmiDays) / 365) : 0;
 
   const claim = {
     id: `claim-${index}`, claimNumber, status, type: ClaimType.DEATH,
@@ -403,7 +403,7 @@ const generateSeededClaim = (index, isFastTrack) => {
       deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: state, proofOfDeathSourceType: seededPick(PROOF_TYPES),
       proofOfDeathDate: new Date(deathDate.getTime() + 3 * DAY).toISOString().split('T')[0],
       certifiedDOB: seededDate(new Date(1940, 0, 1), new Date(1975, 11, 31)).toISOString().split('T')[0],
-      verificationSource: 'LexisNexis', verificationScore: isFastTrack ? Math.floor(seeded() * 10 + 90) : Math.floor(seeded() * 20 + 70), specialEvent: null
+      verificationSource: 'LexisNexis', verificationScore: isSTP ? Math.floor(seeded() * 10 + 90) : Math.floor(seeded() * 20 + 70), specialEvent: null
     },
     insured: { name: insuredName, ssn: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), dateOfBirth: seededDate(new Date(1940, 0, 1), new Date(1975, 11, 31)).toISOString().split('T')[0], dateOfDeath: deathDate.toISOString().split('T')[0], age: Math.floor(seeded() * 30 + 50) },
     claimant: { name: claimantName, relationship: 'Spouse', contactInfo: { email: `${claimantName.toLowerCase().replace(' ', '.')}@email.com`, phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}` } },
@@ -411,13 +411,13 @@ const generateSeededClaim = (index, isFastTrack) => {
     policy: { policyNumber, type: 'Term Life', status: 'In Force', issueDate: policyIssueDate.toISOString().split('T')[0], faceAmount: claimAmount, owner: insuredName },
     parties: [
       { id: `party-${index}-1`, name: insuredName, role: 'Insured', source: 'Policy Admin', resState: state, dateOfBirth: seededDate(new Date(1940, 0, 1), new Date(1975, 11, 31)).toISOString().split('T')[0], ssn: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}`, email: `${insuredName.toLowerCase().replace(' ', '.')}@email.com`, address: `${Math.floor(seeded() * 9999)} Main St, Anytown, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, verificationStatus: 'Verified', verificationScore: 98, cslnAction: 'Verified', cslnResult: 'Match' },
-      { id: `party-${index}-2`, name: claimantName, role: 'Primary Beneficiary', source: 'Policy Admin', resState: state, dateOfBirth: seededDate(new Date(1945, 0, 1), new Date(1975, 11, 31)).toISOString().split('T')[0], ssn: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}`, email: `${claimantName.toLowerCase().replace(' ', '.')}@email.com`, address: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, verificationStatus: isFastTrack ? 'Verified' : 'Pending', verificationScore: isFastTrack ? 95 : 78, cslnAction: 'Search', cslnResult: isFastTrack ? 'Match' : 'Pending Review' },
+      { id: `party-${index}-2`, name: claimantName, role: 'Primary Beneficiary', source: 'Policy Admin', resState: state, dateOfBirth: seededDate(new Date(1945, 0, 1), new Date(1975, 11, 31)).toISOString().split('T')[0], ssn: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}`, email: `${claimantName.toLowerCase().replace(' ', '.')}@email.com`, address: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, verificationStatus: isSTP ? 'Verified' : 'Pending', verificationScore: isSTP ? 95 : 78, cslnAction: 'Search', cslnResult: isSTP ? 'Match' : 'Pending Review' },
       { id: `party-${index}-3`, name: claimantName, role: 'Notifier', source: 'FNOL', resState: state, phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}`, email: `notifier${index}@email.com`, verificationStatus: 'Verified' }
     ],
-    aiInsights: { riskScore: isFastTrack ? Math.floor(seeded() * 25 + 10) : Math.floor(seeded() * 30 + 40), alerts: isFastTrack ? [] : (seeded() > 0.5 ? [{ id: `alert-${index}-1`, severity: 'Medium', category: 'Beneficiary Change', title: 'Recent Beneficiary Modification', message: 'Beneficiary was changed within 12 months of death', description: 'Policy beneficiary was updated before date of death, which may require additional review.', confidence: 75, recommendation: 'Review beneficiary change documentation and rationale', timestamp: new Date(deathDate.getTime() - 180 * DAY).toISOString() }] : []) },
-    financial: { claimAmount, reserve: isClosed ? 0 : Math.floor(claimAmount * 0.9), amountPaid: isClosed ? claimAmount : 0, pmiState: state, pmiRate: isFastTrack ? 0.10 : 0.08, pmiDays, interestAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, federalTaxRate: 24, stateTaxRate: 5.75, taxableAmount: interestAmount, federalTaxWithheld: Math.floor(interestAmount * 0.24), stateTaxWithheld: Math.floor(interestAmount * 0.0575), taxWithheld: Math.floor(interestAmount * 0.2975), percentage: 100, currency: 'USD',
-      payments: isClosed ? [{ id: `payment-${index}-1`, paymentNumber: `PAY-${String(index).padStart(6, '0')}`, payeeId: `party-${index}-2`, payeeName: claimantName, payeeSSN: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), payeeAddress: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, benefitAmount: claimAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, pmiCalculation: { state, rate: isFastTrack ? 10 : 8, dateOfDeath: deathDate.toISOString().split('T')[0], settlementDate: closedDate.toISOString().split('T')[0], days: pmiDays, amount: interestAmount }, taxWithholding: { federalRate: 24, stateRate: 5.75, taxableAmount: interestAmount, federalWithheld: Math.floor(interestAmount * 0.24), stateWithheld: Math.floor(interestAmount * 0.0575), totalWithheld: Math.floor(interestAmount * 0.2975) }, taxWithheld: Math.floor(interestAmount * 0.2975), netPayment: claimAmount + interestAmount - Math.floor(interestAmount * 0.2975), percentage: 100, paymentMethod: seeded() > 0.5 ? 'ACH' : 'Check', bankInfo: { accountType: 'Checking', routingNumber: '021000021', accountNumberLast4: `****${Math.floor(seeded() * 9000 + 1000)}` }, scheduledDate: closedDate.toISOString().split('T')[0], paymentDate: closedDate.toISOString().split('T')[0], status: 'Completed', glPosting: { posted: true, postingDate: new Date(closedDate.getTime() + DAY).toISOString().split('T')[0], batchNumber: `GL-${Math.floor(seeded() * 900000 + 100000)}`, accountCodes: { benefit: '5000-1000', pmi: '5000-1100', tax: '2000-3000' } }, tax1099: { generated: true, year: NOW.getFullYear(), formType: '1099-MISC', box3Amount: interestAmount } }] : [] },
-    routing: isFastTrack ? { type: RoutingType.FASTTRACK, score: Math.floor(seeded() * 10 + 85), eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } } : { type: RoutingType.STANDARD, score: Math.floor(seeded() * 15 + 70), eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: seeded() > 0.4, noContestability: true, claimAmountThreshold: true, noAnomalies: seeded() > 0.3 } },
+    aiInsights: { riskScore: isSTP ? Math.floor(seeded() * 25 + 10) : Math.floor(seeded() * 30 + 40), alerts: isSTP ? [] : (seeded() > 0.5 ? [{ id: `alert-${index}-1`, severity: 'Medium', category: 'Beneficiary Change', title: 'Recent Beneficiary Modification', message: 'Beneficiary was changed within 12 months of death', description: 'Policy beneficiary was updated before date of death, which may require additional review.', confidence: 75, recommendation: 'Review beneficiary change documentation and rationale', timestamp: new Date(deathDate.getTime() - 180 * DAY).toISOString() }] : []) },
+    financial: { claimAmount, reserve: isClosed ? 0 : Math.floor(claimAmount * 0.9), amountPaid: isClosed ? claimAmount : 0, pmiState: state, pmiRate: isSTP ? 0.10 : 0.08, pmiDays, interestAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, federalTaxRate: 24, stateTaxRate: 5.75, taxableAmount: interestAmount, federalTaxWithheld: Math.floor(interestAmount * 0.24), stateTaxWithheld: Math.floor(interestAmount * 0.0575), taxWithheld: Math.floor(interestAmount * 0.2975), percentage: 100, currency: 'USD',
+      payments: isClosed ? [{ id: `payment-${index}-1`, paymentNumber: `PAY-${String(index).padStart(6, '0')}`, payeeId: `party-${index}-2`, payeeName: claimantName, payeeSSN: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), payeeAddress: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, benefitAmount: claimAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, pmiCalculation: { state, rate: isSTP ? 10 : 8, dateOfDeath: deathDate.toISOString().split('T')[0], settlementDate: closedDate.toISOString().split('T')[0], days: pmiDays, amount: interestAmount }, taxWithholding: { federalRate: 24, stateRate: 5.75, taxableAmount: interestAmount, federalWithheld: Math.floor(interestAmount * 0.24), stateWithheld: Math.floor(interestAmount * 0.0575), totalWithheld: Math.floor(interestAmount * 0.2975) }, taxWithheld: Math.floor(interestAmount * 0.2975), netPayment: claimAmount + interestAmount - Math.floor(interestAmount * 0.2975), percentage: 100, paymentMethod: seeded() > 0.5 ? 'ACH' : 'Check', bankInfo: { accountType: 'Checking', routingNumber: '021000021', accountNumberLast4: `****${Math.floor(seeded() * 9000 + 1000)}` }, scheduledDate: closedDate.toISOString().split('T')[0], paymentDate: closedDate.toISOString().split('T')[0], status: 'Completed', glPosting: { posted: true, postingDate: new Date(closedDate.getTime() + DAY).toISOString().split('T')[0], batchNumber: `GL-${Math.floor(seeded() * 900000 + 100000)}`, accountCodes: { benefit: '5000-1000', pmi: '5000-1100', tax: '2000-3000' } }, tax1099: { generated: true, year: NOW.getFullYear(), formType: '1099-MISC', box3Amount: interestAmount } }] : [] },
+    routing: isSTP ? { type: RoutingType.STP, score: Math.floor(seeded() * 10 + 85), eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } } : { type: RoutingType.STANDARD, score: Math.floor(seeded() * 15 + 70), eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: seeded() > 0.4, noContestability: true, claimAmountThreshold: true, noAnomalies: seeded() > 0.3 } },
     workflow: { fsoCase: `FSO-${claimNumber}`, currentTask: isClosed ? null : 'Review Requirements', assignedTo: isClosed ? null : seededPick(['John Smith', 'Sarah Johnson', 'Jane Examiner']), daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: !isClosed && daysToSla < 3 } }
   };
   claim.sysId = `demo-sys-id-${index}`; claim.fnolNumber = `FNOL${String(index).padStart(7, '0')}`;
@@ -428,9 +428,9 @@ const generateSeededClaim = (index, isFastTrack) => {
 export const generateDemoClaims = () => {
   const showcaseClaims = createShowcaseClaims();
   const seededClaims = [];
-  const fastTrackIndices = [6, 8, 11, 14, 17, 19];
+  const stpIndices = [6, 8, 11, 14, 17, 19];
   for (let i = 6; i <= 20; i++) {
-    seededClaims.push(generateSeededClaim(i, fastTrackIndices.includes(i)));
+    seededClaims.push(generateSeededClaim(i, stpIndices.includes(i)));
   }
   return [...showcaseClaims, ...seededClaims];
 };
@@ -445,7 +445,7 @@ export const generateDemoPolicies = (claims) => {
 
 export const generateDemoFSOCases = (claims) => {
   return claims.map(claim => ({
-    id: claim.workflow.fsoCase, claimId: claim.id, claimNumber: claim.claimNumber, status: claim.status === ClaimStatus.CLOSED ? 'Closed' : 'Open', priority: claim.routing?.type === RoutingType.FASTTRACK ? 'High' : 'Normal', currentTask: claim.workflow.currentTask, assignedTo: claim.workflow.assignedTo, sla: claim.workflow.sla, playbook: claim.routing?.type === RoutingType.FASTTRACK ? 'FastTrack Death Claim' : 'Standard Death Claim', createdAt: claim.createdAt, updatedAt: claim.updatedAt
+    id: claim.workflow.fsoCase, claimId: claim.id, claimNumber: claim.claimNumber, status: claim.status === ClaimStatus.CLOSED ? 'Closed' : 'Open', priority: claim.routing?.type === RoutingType.STP ? 'High' : 'Normal', currentTask: claim.workflow.currentTask, assignedTo: claim.workflow.assignedTo, sla: claim.workflow.sla, playbook: claim.routing?.type === RoutingType.STP ? 'STP Death Claim' : 'Standard Death Claim', createdAt: claim.createdAt, updatedAt: claim.updatedAt
   }));
 };
 
