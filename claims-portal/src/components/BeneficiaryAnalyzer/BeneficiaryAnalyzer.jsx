@@ -586,28 +586,38 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
         </DxcFlex>
 
         {/* Summary Metrics Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '24px' }}>
           {/* Match Score Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '12px',
-            borderRadius: '6px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            border: `2px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02'}`
+            padding: '20px',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: `3px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02'}`,
+            transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="4px">
-              <DxcFlex gap="6px" alignItems="center">
-                <span className="material-icons" style={{ fontSize: '16px', color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02' }}>
-                  {analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'check_circle' : 'warning'}
-                </span>
-                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="#5A6872">
+            <DxcFlex direction="column" gap="12px">
+              <DxcFlex gap="10px" alignItems="center">
+                <div style={{
+                  backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#E8F5E9' : '#FFF3E0',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02' }}>
+                    {analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'check_circle' : 'warning'}
+                  </span>
+                </div>
+                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#374151">
                   Match Score
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="24px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02' }}>
+              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
                 {(analysisData.overallAnalysis.confidence * 100).toFixed(0)}%
               </DxcTypography>
-              <div style={{ width: '100%', height: '4px', backgroundColor: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '6px', backgroundColor: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${analysisData.overallAnalysis.confidence * 100}%`,
                   height: '100%',
@@ -621,23 +631,33 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Beneficiaries Compared Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '12px',
-            borderRadius: '6px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            border: '1px solid #E5E7EB'
+            padding: '20px',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: '2px solid #E5E7EB',
+            transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="4px">
-              <DxcFlex gap="6px" alignItems="center">
-                <span className="material-icons" style={{ fontSize: '16px', color: '#1B5E9E' }}>people</span>
-                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="#5A6872">
+            <DxcFlex direction="column" gap="12px">
+              <DxcFlex gap="10px" alignItems="center">
+                <div style={{
+                  backgroundColor: '#E3F2FD',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: '#1B5E9E' }}>people</span>
+                </div>
+                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#374151">
                   Beneficiaries
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="24px" fontWeight="font-weight-bold" style={{ color: '#1B5E9E' }}>
+              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: '#1B5E9E', lineHeight: '1' }}>
                 {analysisData.extractedBeneficiaries.length}
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-01" color="#5A6872">
-                Compared
+              <DxcTypography fontSize="font-scale-02" color="#6B7280">
+                Records Compared
               </DxcTypography>
             </DxcFlex>
           </div>
@@ -645,23 +665,35 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Mismatches Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '12px',
-            borderRadius: '6px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            border: '1px solid #E5E7EB'
+            padding: '20px',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: '2px solid #E5E7EB',
+            transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="4px">
-              <DxcFlex gap="6px" alignItems="center">
-                <span className="material-icons" style={{ fontSize: '16px', color: '#D32F2F' }}>error_outline</span>
-                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="#5A6872">
-                  Mismatches
+            <DxcFlex direction="column" gap="12px">
+              <DxcFlex gap="10px" alignItems="center">
+                <div style={{
+                  backgroundColor: analysisData.overallAnalysis.discrepancies.length === 0 ? '#E8F5E9' : '#FFEBEE',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F' }}>
+                    {analysisData.overallAnalysis.discrepancies.length === 0 ? 'check_circle' : 'error_outline'}
+                  </span>
+                </div>
+                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#374151">
+                  Discrepancies
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="24px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F' }}>
+              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F', lineHeight: '1' }}>
                 {analysisData.overallAnalysis.discrepancies.length}
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-01" color="#5A6872">
-                Found
+              <DxcTypography fontSize="font-scale-02" color="#6B7280">
+                Issues Found
               </DxcTypography>
             </DxcFlex>
           </div>
@@ -669,24 +701,37 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Data Source Sync Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '12px',
-            borderRadius: '6px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            border: '1px solid #E5E7EB'
+            padding: '20px',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: '2px solid #E5E7EB',
+            transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="4px">
-              <DxcFlex gap="6px" alignItems="center">
-                <span className="material-icons" style={{ fontSize: '16px', color: '#0288D1' }}>sync</span>
-                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="#5A6872">
+            <DxcFlex direction="column" gap="12px">
+              <DxcFlex gap="10px" alignItems="center">
+                <div style={{
+                  backgroundColor: '#E1F5FE',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: '#0288D1' }}>sync</span>
+                </div>
+                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#374151">
                   Data Sources
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="16px" fontWeight="font-weight-bold" style={{ color: '#0288D1' }}>
+              <DxcTypography fontSize="20px" fontWeight="font-weight-bold" style={{ color: '#0288D1', lineHeight: '1.4' }}>
                 DMS ↔ PAS
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-01" color="#2E7D32">
-                ✓ Synced
-              </DxcTypography>
+              <DxcFlex gap="6px" alignItems="center">
+                <span className="material-icons" style={{ fontSize: '18px', color: '#2E7D32' }}>check_circle</span>
+                <DxcTypography fontSize="font-scale-02" color="#2E7D32" fontWeight="font-weight-semibold">
+                  Synced
+                </DxcTypography>
+              </DxcFlex>
             </DxcFlex>
           </div>
         </div>
@@ -778,14 +823,17 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                 key={extractedBen.id}
                 style={{
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '6px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                  border: `2px solid ${isHighMatch ? '#2E7D32' : '#ED6C02'}`,
+                  borderRadius: '12px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  border: `3px solid ${isHighMatch ? '#2E7D32' : '#ED6C02'}`,
                   overflow: 'hidden',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)'}
               >
-                <div style={{ padding: '12px' }}>
+                <div style={{ padding: '20px' }}>
                   {/* Modern Card Header */}
                   <div
                     style={{
@@ -793,86 +841,103 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '2px 0'
+                      padding: '8px 0'
                     }}
                     onClick={() => toggleBeneficiary(extractedBen.id)}
                   >
-                    <DxcFlex gap="8px" alignItems="center" style={{ flex: 1 }}>
-                      <span
-                        className="material-icons"
-                        style={{
-                          fontSize: '18px',
-                          color: '#5A6872',
-                          transition: 'transform 0.2s',
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
-                        }}
-                      >
-                        chevron_right
-                      </span>
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" style={{ color: '#1F2937' }}>
-                        {extractedBen.fullName}
-                      </DxcTypography>
-                      <span style={{
-                        padding: '3px 10px',
-                        borderRadius: '10px',
-                        backgroundColor: extractedBen.relationship === 'Primary' ? '#E3F2FD' : '#FFF3E0',
-                        color: extractedBen.relationship === 'Primary' ? '#1565C0' : '#E65100',
-                        fontSize: '11px',
-                        fontWeight: '600'
-                      }}>
-                        {extractedBen.relationship}
-                      </span>
-                      <span style={{
-                        padding: '3px 10px',
-                        borderRadius: '10px',
-                        backgroundColor: '#F3F4F6',
-                        color: '#1F2937',
-                        fontSize: '11px',
-                        fontWeight: '600'
-                      }}>
-                        {extractedBen.percentage}%
-                      </span>
-                      {adminBen && extractedBen.fullName === adminBen.fullName && extractedBen.dateOfBirth === adminBen.dateOfBirth && (
-                        <span style={{
-                          padding: '3px 10px',
-                          borderRadius: '10px',
-                          backgroundColor: '#F1F8F4',
-                          color: '#2E7D32',
-                          fontSize: '11px',
-                          fontWeight: '600',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '3px'
-                        }}>
-                          <span className="material-icons" style={{ fontSize: '12px' }}>check_circle</span>
-                          Match
-                        </span>
-                      )}
-                    </DxcFlex>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      <div style={{ textAlign: 'right' }}>
-                        <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02' }}>
-                          {(matchScore * 100).toFixed(0)}%
-                        </DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" style={{ color: '#9CA3AF' }}>
-                          confidence
-                        </DxcTypography>
-                      </div>
+                    <DxcFlex gap="16px" alignItems="center" style={{ flex: 1 }}>
                       <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        backgroundColor: isHighMatch ? '#F1F8F4' : '#FFF4E5',
+                        backgroundColor: isHighMatch ? '#E8F5E9' : '#FFF3E0',
+                        borderRadius: '8px',
+                        padding: '8px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}>
-                        <span className="material-icons" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02', fontSize: '18px' }}>
-                          {isHighMatch ? 'check_circle' : 'warning'}
+                        <span
+                          className="material-icons"
+                          style={{
+                            fontSize: '24px',
+                            color: isHighMatch ? '#2E7D32' : '#ED6C02',
+                            transition: 'transform 0.2s',
+                            transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
+                          }}
+                        >
+                          chevron_right
+                        </span>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <DxcFlex gap="12px" alignItems="center" wrap="wrap">
+                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-bold" style={{ color: '#111827' }}>
+                            {extractedBen.fullName}
+                          </DxcTypography>
+                          <span style={{
+                            padding: '6px 14px',
+                            borderRadius: '16px',
+                            backgroundColor: extractedBen.relationship === 'Primary' ? '#E3F2FD' : '#FFF3E0',
+                            color: extractedBen.relationship === 'Primary' ? '#1565C0' : '#E65100',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            border: `1px solid ${extractedBen.relationship === 'Primary' ? '#90CAF9' : '#FFB74D'}`
+                          }}>
+                            {extractedBen.relationship}
+                          </span>
+                          <span style={{
+                            padding: '6px 14px',
+                            borderRadius: '16px',
+                            backgroundColor: '#F3F4F6',
+                            color: '#1F2937',
+                            fontSize: '13px',
+                            fontWeight: '700',
+                            border: '1px solid #D1D5DB'
+                          }}>
+                            {extractedBen.percentage}%
+                          </span>
+                          {adminBen && extractedBen.fullName === adminBen.fullName && extractedBen.dateOfBirth === adminBen.dateOfBirth && (
+                            <span style={{
+                              padding: '6px 14px',
+                              borderRadius: '16px',
+                              backgroundColor: '#E8F5E9',
+                              color: '#2E7D32',
+                              fontSize: '13px',
+                              fontWeight: '600',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              border: '1px solid #81C784'
+                            }}>
+                              <span className="material-icons" style={{ fontSize: '16px' }}>check_circle</span>
+                              Perfect Match
+                            </span>
+                          )}
+                        </DxcFlex>
+                      </div>
+                    </DxcFlex>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px'
+                    }}>
+                      <div style={{ textAlign: 'right' }}>
+                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-bold" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
+                          {(matchScore * 100).toFixed(0)}%
+                        </DxcTypography>
+                        <DxcTypography fontSize="font-scale-01" style={{ color: '#6B7280', marginTop: '4px' }}>
+                          Confidence
+                        </DxcTypography>
+                      </div>
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '12px',
+                        backgroundColor: isHighMatch ? '#E8F5E9' : '#FFF3E0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: `2px solid ${isHighMatch ? '#81C784' : '#FFB74D'}`
+                      }}>
+                        <span className="material-icons" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02', fontSize: '28px' }}>
+                          {isHighMatch ? 'verified' : 'priority_high'}
                         </span>
                       </div>
                     </div>
@@ -881,19 +946,45 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   {/* Expanded Content */}
                   {isExpanded && (
                     <>
-                      <DxcDivider style={{ margin: 'var(--spacing-gap-xs) 0' }} />
-                      <DxcGrid templateColumns={["1fr", "1fr"]} gap={{ columnGap: "1rem", rowGap: "var(--spacing-gap-xs)" }}>
+                      <DxcDivider style={{ margin: '20px 0' }} />
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '24px',
+                        marginTop: '20px'
+                      }}>
                         {/* Left: DMS Data */}
-                        <DxcGrid.Item>
-                          <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                              <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-primary-strong)' }}>description</span>
-                              <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
-                                DMS Extracted
+                        <div style={{
+                          backgroundColor: '#F8FAFC',
+                          padding: '20px',
+                          borderRadius: '12px',
+                          border: '2px solid #1B5E9E'
+                        }}>
+                          <DxcFlex direction="column" gap="16px">
+                            <DxcFlex gap="12px" alignItems="center">
+                              <div style={{
+                                backgroundColor: '#E3F2FD',
+                                borderRadius: '8px',
+                                padding: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                                <span className="material-icons" style={{ fontSize: '24px', color: '#1B5E9E' }}>description</span>
+                              </div>
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-bold" color="#1B5E9E">
+                                DMS Extracted Data
                               </DxcTypography>
                             </DxcFlex>
 
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              padding: '16px',
+                              borderRadius: '8px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px'
+                            }}>
                               <DetailWithConfidence
                                 label="Full Name"
                                 value={extractedBen.fullName}
@@ -933,68 +1024,82 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                   confidence={0.95}
                                 />
                               )}
-                            </DxcFlex>
+                            </div>
 
                             {/* Document Information */}
-                            <div style={{ backgroundColor: 'var(--color-bg-primary-lightest)', padding: 'var(--spacing-padding-xs)', borderRadius: '4px', marginTop: 'var(--spacing-gap-xs)' }}>
-                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                                <DxcFlex gap="var(--spacing-gap-xxs)" alignItems="center">
-                                  <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-primary-stronger)' }}>description</span>
-                                  <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
+                            <div style={{ backgroundColor: '#E3F2FD', padding: '16px', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+                              <DxcFlex direction="column" gap="10px">
+                                <DxcFlex gap="8px" alignItems="center">
+                                  <span className="material-icons" style={{ fontSize: '18px', color: '#1565C0' }}>insert_drive_file</span>
+                                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#1565C0">
                                     Source Document
                                   </DxcTypography>
                                 </DxcFlex>
-                                <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+                                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#1F2937">
                                   {extractedBen.sourceDocument.name}
                                 </DxcTypography>
-                                <DxcFlex gap="var(--spacing-gap-s)">
-                                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                                    Doc ID: {extractedBen.sourceDocument.id}
-                                  </DxcTypography>
+                                <DxcFlex gap="12px" wrap="wrap">
+                                  <span style={{
+                                    padding: '4px 10px',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#FFFFFF',
+                                    color: '#1565C0',
+                                    fontSize: '12px',
+                                    fontWeight: '600'
+                                  }}>
+                                    ID: {extractedBen.sourceDocument.id}
+                                  </span>
                                   {extractedBen.sourceDocument.pageNumber && (
-                                    <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                                      • Page {extractedBen.sourceDocument.pageNumber}
-                                    </DxcTypography>
+                                    <span style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '6px',
+                                      backgroundColor: '#FFFFFF',
+                                      color: '#1565C0',
+                                      fontSize: '12px',
+                                      fontWeight: '600'
+                                    }}>
+                                      Page {extractedBen.sourceDocument.pageNumber}
+                                    </span>
                                   )}
                                 </DxcFlex>
                               </DxcFlex>
                             </div>
 
-                            {/* Compact AI Reasoning */}
-                            <div style={{ backgroundColor: 'var(--color-bg-primary-lightest)', padding: 'var(--spacing-padding-xs)', borderRadius: '4px', marginTop: 'var(--spacing-gap-xs)' }}>
-                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                                <DxcFlex gap="var(--spacing-gap-xxs)" alignItems="center">
-                                  <span className="material-icons" style={{ fontSize: '12px', color: 'var(--color-fg-primary-stronger)' }}>psychology</span>
-                                  <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
-                                    Reasoning
+                            {/* AI Reasoning */}
+                            <div style={{ backgroundColor: '#E3F2FD', padding: '16px', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+                              <DxcFlex direction="column" gap="10px">
+                                <DxcFlex gap="8px" alignItems="center">
+                                  <span className="material-icons" style={{ fontSize: '18px', color: '#1565C0' }}>psychology</span>
+                                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#1565C0">
+                                    AI Analysis
                                   </DxcTypography>
                                 </DxcFlex>
-                                <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+                                <DxcTypography fontSize="font-scale-02" color="#1F2937" style={{ lineHeight: '1.5' }}>
                                   {extractedBen.extractionReasoning}
                                 </DxcTypography>
                               </DxcFlex>
                             </div>
 
-                            {/* Compact Action Buttons */}
-                            <DxcFlex gap="var(--spacing-gap-xxs)" wrap="wrap">
+                            {/* Action Buttons */}
+                            <DxcFlex gap="12px" wrap="wrap">
                               <DxcButton
-                                label="Verify"
+                                label="Verify Address"
                                 mode="secondary"
-                                size="small"
+                                size="medium"
                                 icon="location_on"
                                 onClick={(e) => { e.stopPropagation(); handleLexisNexisLookup(extractedBen.id, 'address'); }}
                               />
                               <DxcButton
-                                label="Deceased"
+                                label="Death Check"
                                 mode="secondary"
-                                size="small"
+                                size="medium"
                                 icon="person_search"
                                 onClick={(e) => { e.stopPropagation(); handleLexisNexisLookup(extractedBen.id, 'deceased'); }}
                               />
                               <DxcButton
-                                label="Document"
+                                label="View Document"
                                 mode="tertiary"
-                                size="small"
+                                size="medium"
                                 icon="description"
                                 onClick={(e) => { e.stopPropagation(); handleViewDocument(extractedBen.sourceDocument.id); }}
                               />
@@ -1020,20 +1125,41 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                               </DxcFlex>
                             )}
                           </DxcFlex>
-                        </DxcGrid.Item>
+                        </div>
 
                         {/* Right: PAS Data */}
-                        <DxcGrid.Item>
+                        <div style={{
+                          backgroundColor: '#F8FAFC',
+                          padding: '20px',
+                          borderRadius: '12px',
+                          border: '2px solid #0288D1'
+                        }}>
                           {adminBen ? (
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                              <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                                <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-info-strong)' }}>storage</span>
-                                <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
-                                  PAS Administrative
+                            <DxcFlex direction="column" gap="16px">
+                              <DxcFlex gap="12px" alignItems="center">
+                                <div style={{
+                                  backgroundColor: '#E1F5FE',
+                                  borderRadius: '8px',
+                                  padding: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}>
+                                  <span className="material-icons" style={{ fontSize: '24px', color: '#0288D1' }}>storage</span>
+                                </div>
+                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-bold" color="#0288D1">
+                                  PAS Administrative Data
                                 </DxcTypography>
                               </DxcFlex>
 
-                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                              <div style={{
+                                backgroundColor: '#FFFFFF',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px'
+                              }}>
                                 <SimpleDetail label="Full Name" value={adminBen.fullName} />
                                 <SimpleDetail label="Date of Birth" value={adminBen.dateOfBirth} />
                                 <SimpleDetail label="Beneficiary Type" value={adminBen.relationship} />
@@ -1041,26 +1167,45 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                 <SimpleDetail label="SSN" value={adminBen.ssn} />
                                 {adminBen.phone && <SimpleDetail label="Phone" value={adminBen.phone} />}
                                 {adminBen.email && <SimpleDetail label="Email" value={adminBen.email} />}
-                              </DxcFlex>
+                              </div>
 
-                              {/* Compact Admin Metadata */}
-                              <div style={{ backgroundColor: 'var(--color-bg-info-lightest)', padding: 'var(--spacing-padding-xs)', borderRadius: '4px', marginTop: 'var(--spacing-gap-xs)' }}>
-                                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
-                                    Source: {adminBen.source}
+                              {/* Admin Metadata */}
+                              <div style={{ backgroundColor: '#E1F5FE', padding: '16px', borderRadius: '8px', border: '1px solid #4FC3F7' }}>
+                                <DxcFlex direction="column" gap="10px">
+                                  <DxcFlex gap="8px" alignItems="center">
+                                    <span className="material-icons" style={{ fontSize: '18px', color: '#0277BD' }}>source</span>
+                                    <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#0277BD">
+                                      Data Source
+                                    </DxcTypography>
+                                  </DxcFlex>
+                                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#1F2937">
+                                    {adminBen.source}
                                   </DxcTypography>
                                 </DxcFlex>
                               </div>
                             </DxcFlex>
                           ) : (
-                            <DxcAlert
-                              semantic="warning"
-                              title="No Matching PAS Record"
-                              message={{ text: 'No corresponding administrative record found for this beneficiary.' }}
-                            />
+                            <DxcFlex direction="column" gap="16px" alignItems="center" justifyContent="center" style={{ minHeight: '400px' }}>
+                              <div style={{
+                                backgroundColor: '#FFF3E0',
+                                borderRadius: '50%',
+                                padding: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                                <span className="material-icons" style={{ fontSize: '48px', color: '#F57C00' }}>warning</span>
+                              </div>
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-bold" color="#E65100" textAlign="center">
+                                No Matching PAS Record
+                              </DxcTypography>
+                              <DxcTypography fontSize="font-scale-02" color="#6B7280" textAlign="center">
+                                No corresponding administrative record found for this beneficiary.
+                              </DxcTypography>
+                            </DxcFlex>
                           )}
-                        </DxcGrid.Item>
-                      </DxcGrid>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
@@ -1073,7 +1218,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
   );
 };
 
-// Compact helper component for displaying details with confidence scores
+// Helper component for displaying details with confidence scores
 const DetailWithConfidence = ({ label, value, confidence }) => {
   const getConfidenceMode = (score) => {
     if (score >= 0.9) return 'success';
@@ -1081,36 +1226,65 @@ const DetailWithConfidence = ({ label, value, confidence }) => {
     return 'error';
   };
 
+  const getConfidenceColor = (score) => {
+    if (score >= 0.9) return '#2E7D32';
+    if (score >= 0.75) return '#F57C00';
+    return '#D32F2F';
+  };
+
   return (
-    <DxcFlex justifyContent="space-between" alignItems="center">
-      <DxcFlex direction="column" gap="1px">
-        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '12px 0',
+      borderBottom: '1px solid #E5E7EB'
+    }}>
+      <DxcFlex direction="column" gap="6px">
+        <DxcTypography fontSize="font-scale-01" color="#6B7280" fontWeight="font-weight-semibold">
           {label}
         </DxcTypography>
-        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
+        <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#111827">
           {value}
         </DxcTypography>
       </DxcFlex>
-      <DxcStatusLight
-        mode={getConfidenceMode(confidence)}
-        label={`${(confidence * 100).toFixed(0)}%`}
-        size="small"
-      />
-    </DxcFlex>
+      <div style={{
+        padding: '6px 12px',
+        borderRadius: '8px',
+        backgroundColor: confidence >= 0.9 ? '#E8F5E9' : confidence >= 0.75 ? '#FFF3E0' : '#FFEBEE',
+        border: `2px solid ${getConfidenceColor(confidence)}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+      }}>
+        <span className="material-icons" style={{ fontSize: '16px', color: getConfidenceColor(confidence) }}>
+          {confidence >= 0.9 ? 'check_circle' : confidence >= 0.75 ? 'warning' : 'error'}
+        </span>
+        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-bold" style={{ color: getConfidenceColor(confidence) }}>
+          {(confidence * 100).toFixed(0)}%
+        </DxcTypography>
+      </div>
+    </div>
   );
 };
 
-// Compact helper component for simple admin record details
+// Helper component for simple admin record details
 const SimpleDetail = ({ label, value }) => {
   return (
-    <DxcFlex direction="column" gap="1px">
-      <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
+      padding: '12px 0',
+      borderBottom: '1px solid #E5E7EB'
+    }}>
+      <DxcTypography fontSize="font-scale-01" color="#6B7280" fontWeight="font-weight-semibold">
         {label}
       </DxcTypography>
-      <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold">
+      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#111827">
         {value}
       </DxcTypography>
-    </DxcFlex>
+    </div>
   );
 };
 

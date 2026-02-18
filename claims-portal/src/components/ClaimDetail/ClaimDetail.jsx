@@ -32,6 +32,7 @@ import { useDocument } from '../../contexts/DocumentContext';
 import FastTrackBadge from '../shared/FastTrackBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import RequirementsTracker from '../shared/RequirementsTracker';
+import DocumentUpload from '../shared/DocumentUpload';
 import BeneficiaryAnalysisPanel from './BeneficiaryAnalysisPanel';
 import { ClaimStatus, RoutingType } from '../../types/claim.types';
 
@@ -488,12 +489,35 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   label="Documents"
                   icon="folder"
                   active={activeTabIndex === 1}
-                  onClick={() => setActiveTabIndex(1)}
+                  onClick={() => {
+                    setActiveTabIndex(1);
+                    console.log('[ClaimDetail] Documents tab clicked, claim object:', claim);
+                    console.log('[ClaimDetail] claim.sysId:', claim.sysId);
+                    console.log('[ClaimDetail] claim.id:', claim.id);
+                    console.log('[ClaimDetail] claim.source:', claim.source);
+                  }}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
-                    <DxcTypography fontSize="font-scale-03">
-                      Documents section (coming in Phase 5)
-                    </DxcTypography>
+                    {(() => {
+                      console.log('[ClaimDetail] Rendering DocumentUpload with claimId:', claimId);
+                      console.log('[ClaimDetail] claim.claimNumber:', claim?.claimNumber);
+                      console.log('[ClaimDetail] claim.fnolNumber:', claim?.fnolNumber);
+                      return null;
+                    })()}
+                    {claim && claim.source === 'servicenow' ? (
+                      <DocumentUpload
+                        claimId={claimId}
+                        tableName="x_dxcis_claims_a_0_claims_fnol"
+                        tableSysId={claimId}
+                        onUploadComplete={(result) => {
+                          console.log('Upload complete:', result);
+                        }}
+                      />
+                    ) : (
+                      <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                        Document upload is only available for ServiceNow FNOL claims.
+                      </DxcTypography>
+                    )}
                   </div>
                 </DxcTabs.Tab>
 

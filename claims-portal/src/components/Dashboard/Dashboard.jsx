@@ -30,6 +30,7 @@ const Dashboard = ({ onClaimSelect }) => {
   const [searchValue, setSearchValue] = useState('');
   const [isGridView, setIsGridView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [fnolCurrentPage, setFnolCurrentPage] = useState(1); // Separate pagination for FNOL
   const [snowClaims, setSnowClaims] = useState([]);
   const [snowLoading, setSnowLoading] = useState(false);
   const [snowConnected, setSnowConnected] = useState(serviceNowService.isAuthenticated());
@@ -319,6 +320,15 @@ const Dashboard = ({ onClaimSelect }) => {
     const startIndex = (currentPage - 1) * 9;
     return filteredClaims.slice(startIndex, startIndex + 9);
   }, [filteredClaims, currentPage]);
+
+  // Paginate FNOL claims (5 per page)
+  const paginatedFnolClaims = useMemo(() => {
+    const startIndex = (fnolCurrentPage - 1) * 5;
+    return snowClaims.slice(startIndex, startIndex + 5);
+  }, [snowClaims, fnolCurrentPage]);
+
+  // Calculate total pages for FNOL
+  const fnolTotalPages = Math.ceil(snowClaims.length / 5);
 
   // Helper to get status color
   const getStatusColor = (status) => {
@@ -826,7 +836,7 @@ const Dashboard = ({ onClaimSelect }) => {
           </DxcFlex>
         </div>
 
-        {/* ServiceNow FNOL Claims Table */}
+        {/* FNOL Claims Table */}
         <div style={{
           backgroundColor: "var(--color-bg-neutral-lightest)",
           borderRadius: "var(--border-radius-m)",
@@ -836,7 +846,7 @@ const Dashboard = ({ onClaimSelect }) => {
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             <DxcFlex justifyContent="space-between" alignItems="center">
               <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                <DxcHeading level={3} text="ServiceNow FNOL Claims" />
+                <DxcHeading level={3} text="FNOL Claims" />
                 {snowConnected && <DxcBadge label={String(snowClaims.length)} notificationBadge />}
               </DxcFlex>
               <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
@@ -875,74 +885,138 @@ const Dashboard = ({ onClaimSelect }) => {
             ) : snowClaims.length === 0 && !snowLoading ? (
               <DxcContainer padding="var(--spacing-padding-m)" style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}>
                 <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
-                  No ServiceNow FNOL records found. Check your ServiceNow connection configuration.
+                  No FNOL records found. Check your ServiceNow connection configuration.
                 </DxcTypography>
               </DxcContainer>
             ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "2px solid var(--color-fg-secondary-medium)", textAlign: "left" }}>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>FNOL Number</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Insured</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Claimant</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Policy</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Opened</th>
-                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {snowClaims.map((claim, index) => (
-                      <tr
-                        key={claim.sysId || index}
-                        style={{
-                          borderBottom: "1px solid var(--border-color-neutral-lighter)",
-                          cursor: "pointer",
-                          backgroundColor: index % 2 === 0 ? "var(--color-bg-neutral-lightest)" : "var(--color-bg-neutral-lighter)"
-                        }}
-                        onClick={() => onClaimSelect(claim)}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-bg-neutral-light)"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? "var(--color-bg-neutral-lightest)" : "var(--color-bg-neutral-lighter)"}
-                      >
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
-                            {claim.fnolNumber || claim.claimNumber || 'N/A'}
-                          </DxcTypography>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcBadge label={claim.status || 'unknown'} mode="contextual" color={getStatusColor(claim.status)} />
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcTypography fontSize="font-scale-03">{claim.insured?.name || 'N/A'}</DxcTypography>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcTypography fontSize="font-scale-03">{claim.claimant?.name || 'N/A'}</DxcTypography>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcTypography fontSize="font-scale-03">{claim.policy?.policyNumber || 'N/A'}</DxcTypography>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
-                            {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
-                          </DxcTypography>
-                        </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <DxcFlex gap="var(--spacing-gap-xs)">
-                            <DxcButton
-                              icon="open_in_new"
-                              mode="tertiary"
-                              size="small"
-                              title="Open Claim"
-                              onClick={(e) => { e.stopPropagation(); onClaimSelect(claim); }}
-                            />
+              <>
+              <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                {paginatedFnolClaims.map((claim, index) => {
+                  const hasFastTrack = claim.routing?.type === RoutingType.FASTTRACK;
+                  const hasSLA = claim.workflow?.sla?.dueDate;
+
+                  return (
+                    <DxcContainer
+                      key={claim.sysId || index}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lighter)",
+                        cursor: "pointer",
+                        borderRadius: "var(--border-radius-m)",
+                        border: "1px solid var(--border-color-neutral-lighter)"
+                      }}
+                      onClick={() => onClaimSelect(claim)}
+                    >
+                      <DxcInset space="var(--spacing-padding-m)">
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                          <DxcFlex justifyContent="space-between" alignItems="center">
+                            <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                              <DxcTypography
+                                fontSize="font-scale-03"
+                                fontWeight="font-weight-semibold"
+                                color="var(--color-fg-secondary-medium)"
+                              >
+                                {claim.fnolNumber || claim.claimNumber || 'N/A'}
+                              </DxcTypography>
+                              <DxcTypography fontSize="font-scale-03">
+                                {claim.claimant?.name || claim.insured?.name || 'N/A'}
+                              </DxcTypography>
+                              {hasFastTrack && (
+                                <FastTrackBadge eligible={true} showLabel={true} size="small" />
+                              )}
+                            </DxcFlex>
+                            <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                              <DxcButton
+                                icon="check"
+                                mode="tertiary"
+                                title="Approve"
+                                onClick={(e) => { e.stopPropagation(); }}
+                              />
+                              <DxcButton
+                                icon="cancel"
+                                mode="tertiary"
+                                title="Decline"
+                                onClick={(e) => { e.stopPropagation(); }}
+                              />
+                              <DxcButton
+                                icon="swap_horiz"
+                                mode="tertiary"
+                                title="Transfer"
+                                onClick={(e) => { e.stopPropagation(); }}
+                              />
+                            </DxcFlex>
                           </DxcFlex>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+
+                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
+                            <DxcBadge
+                              label={claim.status || 'unknown'}
+                              mode="contextual"
+                              color={getStatusColor(claim.status)}
+                            />
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                              LOB: {claim.type === 'death' ? 'Life' : claim.type === 'annuity' ? 'Annuity' : 'Other'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                              Policy: {claim.policy?.policyNumber || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                              Insured: {claim.insured?.name || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                              Submitted: {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                            </DxcTypography>
+                            {hasSLA && (
+                              <>
+                                <div style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "var(--color-fg-neutral-strong)"
+                                }} />
+                                <SLAIndicator
+                                  slaDate={claim.workflow.sla.dueDate}
+                                  claimStatus={claim.status}
+                                  compact={true}
+                                />
+                              </>
+                            )}
+                          </DxcFlex>
+                        </DxcFlex>
+                      </DxcInset>
+                    </DxcContainer>
+                  );
+                })}
+              </DxcFlex>
+
+              {/* FNOL Pagination */}
+              {snowClaims.length > 5 && (
+                <DxcFlex justifyContent="center" style={{ marginTop: "var(--spacing-gap-m)" }}>
+                  <DxcPaginator
+                    currentPage={fnolCurrentPage}
+                    itemsPerPage={5}
+                    totalItems={snowClaims.length}
+                    onPageChange={(newPage) => setFnolCurrentPage(newPage)}
+                  />
+                </DxcFlex>
+              )}
+              </>
             )}
           </DxcFlex>
         </div>

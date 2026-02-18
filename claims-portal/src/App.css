@@ -3,6 +3,22 @@
    Using Official Bloom Design System
    ============================================================================ */
 
+/* IMPORTANT: Hide DXC Footer completely */
+footer,
+footer[class*="css-"],
+[class*="footer"],
+[class*="Footer"],
+.css-v9qxmx,
+.e1levpo511 {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* Main App Container */
 .app-container {
   display: flex;

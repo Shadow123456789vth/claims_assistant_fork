@@ -11,14 +11,24 @@ import {
 
 const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
   const [customColors, setCustomColors] = useState({
-    blue: '#0095FF',
+    blue: '#4995FF',
     green: '#24A148',
-    orange: '#FF6B00',
-    red: '#D0021B',
-    purple: '#7B61FF'
+    orange: '#FFC982',
+    red: '#FF7E51',
+    accent: '#4995FF'
   });
 
   const predefinedThemes = [
+    {
+      name: 'DXC Brand',
+      colors: {
+        blue: '#4995FF',
+        green: '#24A148',
+        orange: '#FFC982',
+        red: '#FF7E51',
+        accent: '#4995FF'
+      }
+    },
     {
       name: 'Ocean Blue',
       colors: {
@@ -26,7 +36,7 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
         green: '#00C9A7',
         orange: '#FF8C42',
         red: '#FF5E5E',
-        purple: '#6C63FF'
+        accent: '#00ADEE'
       }
     },
     {
@@ -36,7 +46,7 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
         green: '#43A047',
         orange: '#FB8C00',
         red: '#D32F2F',
-        purple: '#7B1FA2'
+        accent: '#37A526'
       }
     },
     {
@@ -46,17 +56,7 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
         green: '#FFB300',
         orange: '#FF6F00',
         red: '#D84315',
-        purple: '#E65100'
-      }
-    },
-    {
-      name: 'Corporate Purple',
-      colors: {
-        blue: '#5E35B1',
-        green: '#7E57C2',
-        orange: '#FF7043',
-        red: '#E53935',
-        purple: '#8E24AA'
+        accent: '#FFAE41'
       }
     },
     {
@@ -66,7 +66,7 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
         green: '#26A69A',
         orange: '#FFB74D',
         red: '#EF5350',
-        purple: '#AB47BC'
+        accent: '#00ADEE'
       }
     }
   ];
@@ -79,13 +79,13 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
   };
 
   const applyTheme = (colors) => {
-    // Apply theme to CSS variables
+    // Apply theme to CSS variables (DXC Brand Colors)
     const root = document.documentElement;
     root.style.setProperty('--color-blue-700', colors.blue);
     root.style.setProperty('--color-green-700', colors.green);
     root.style.setProperty('--color-orange-700', colors.orange);
     root.style.setProperty('--color-red-700', colors.red);
-    root.style.setProperty('--color-purple-700', colors.purple);
+    root.style.setProperty('--color-accent-700', colors.accent);
 
     if (onThemeChange) {
       onThemeChange(colors);

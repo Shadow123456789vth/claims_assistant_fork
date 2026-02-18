@@ -880,47 +880,48 @@ class ServiceNowService {
       fnolNumber: fnol.number || '',
       claimNumber: fnol.number || fnol.case || '',
       status: stateMap[fnol.state] || 'new',
-      claimType: 'death',
+      type: fnol.claim_type?.display_value?.toLowerCase() || fnol.claim_type?.toLowerCase() || fnol.nature_of_loss?.display_value?.toLowerCase() || 'death',
+      claimType: fnol.claim_type?.display_value?.toLowerCase() || fnol.claim_type?.toLowerCase() || 'death',
       source: 'servicenow',
       createdAt: fnol.opened_at || fnol.sys_created_on || '',
       updatedAt: fnol.sys_updated_on || '',
       insured: {
-        name: fnol.insured_full_name || 'N/A',
-        otherNames: fnol.insured_other_names || '',
-        dateOfBirth: fnol.insured_date_of_birth || '',
-        dateOfDeath: fnol.insured_date_of_death || '',
-        placeOfBirth: fnol.insured_place_of_birth || '',
-        maritalStatus: fnol.insured_marital_status || '',
-        causeOfDeath: fnol.insured_cause_of_death || '',
-        mannerOfDeath: fnol.insured_manner_of_death || '',
+        name: fnol.insured_full_name?.display_value || fnol.insured_full_name || fnol.insured_name || 'Unknown Insured',
+        otherNames: fnol.insured_other_names?.display_value || fnol.insured_other_names || '',
+        dateOfBirth: fnol.insured_date_of_birth?.display_value || fnol.insured_date_of_birth || '',
+        dateOfDeath: fnol.insured_date_of_death?.display_value || fnol.insured_date_of_death || '',
+        placeOfBirth: fnol.insured_place_of_birth?.display_value || fnol.insured_place_of_birth || '',
+        maritalStatus: fnol.insured_marital_status?.display_value || fnol.insured_marital_status || '',
+        causeOfDeath: fnol.insured_cause_of_death?.display_value || fnol.insured_cause_of_death || '',
+        mannerOfDeath: fnol.insured_manner_of_death?.display_value || fnol.insured_manner_of_death || '',
         address: {
-          street: fnol.insured_street_address || '',
-          city: fnol.insured_city || '',
-          state: fnol.insured_state || '',
-          zipCode: fnol.insured_zip_code || ''
+          street: fnol.insured_street_address?.display_value || fnol.insured_street_address || '',
+          city: fnol.insured_city?.display_value || fnol.insured_city || '',
+          state: fnol.insured_state?.display_value || fnol.insured_state || '',
+          zipCode: fnol.insured_zip_code?.display_value || fnol.insured_zip_code || ''
         }
       },
       claimant: {
-        name: fnol.claimant_full_name || 'N/A',
-        otherNames: fnol.claimant_other_names || '',
-        relationship: fnol.claimant_relationship_to_insured || '',
-        dateOfBirth: fnol.claimant_date_of_birth || '',
-        sex: fnol.claimant_sex || '',
-        capacity: fnol.claimant_capacity || '',
-        countryOfCitizenship: fnol.claimant_country_of_citizenship || '',
-        emailAddress: fnol.claimant_email_address || '',
-        phoneNumber: fnol.claimant_phone_number || '',
-        communicationMethod: fnol.claimant_communication_method || '',
+        name: fnol.claimant_full_name?.display_value || fnol.claimant_full_name || fnol.claimant_name || fnol.caller_id?.display_value || 'Unknown Claimant',
+        otherNames: fnol.claimant_other_names?.display_value || fnol.claimant_other_names || '',
+        relationship: fnol.claimant_relationship_to_insured?.display_value || fnol.claimant_relationship_to_insured || '',
+        dateOfBirth: fnol.claimant_date_of_birth?.display_value || fnol.claimant_date_of_birth || '',
+        sex: fnol.claimant_sex?.display_value || fnol.claimant_sex || '',
+        capacity: fnol.claimant_capacity?.display_value || fnol.claimant_capacity || '',
+        countryOfCitizenship: fnol.claimant_country_of_citizenship?.display_value || fnol.claimant_country_of_citizenship || '',
+        emailAddress: fnol.claimant_email_address?.display_value || fnol.claimant_email_address || '',
+        phoneNumber: fnol.claimant_phone_number?.display_value || fnol.claimant_phone_number || '',
+        communicationMethod: fnol.claimant_communication_method?.display_value || fnol.claimant_communication_method || '',
         address: {
-          street: fnol.claimant_street_address || '',
-          city: fnol.claimant_city || '',
-          state: fnol.claimant_state || '',
-          zipCode: fnol.claimant_zip_code || ''
+          street: fnol.claimant_street_address?.display_value || fnol.claimant_street_address || '',
+          city: fnol.claimant_city?.display_value || fnol.claimant_city || '',
+          state: fnol.claimant_state?.display_value || fnol.claimant_state || '',
+          zipCode: fnol.claimant_zip_code?.display_value || fnol.claimant_zip_code || ''
         }
       },
       policy: fnol.policy_details ? {
         // Full policy details from enriched data
-        policyNumber: fnol.policy_details.policy_number || fnol.policy_numbers || 'N/A',
+        policyNumber: fnol.policy_details.policy_number || fnol.policy_numbers?.display_value || fnol.policy_numbers || 'Unknown',
         policyType: fnol.policy_details.policy_type || 'Term Life Insurance',
         policyStatus: fnol.policy_details.policy_status || '',
         coverageAmount: fnol.policy_details.coverage_amount || fnol.policy_details.face_amount || 0,
@@ -934,8 +935,8 @@ class ServiceNowService {
         details: fnol.policy_details
       } : {
         // Fallback to basic policy info if not enriched
-        policyNumber: fnol.policy_numbers || 'N/A',
-        policyType: 'Term Life Insurance'
+        policyNumber: fnol.policy_numbers?.display_value || fnol.policy_numbers || fnol.policy_number?.display_value || fnol.policy_number || 'Unknown',
+        policyType: fnol.policy_type?.display_value || fnol.policy_type || 'Term Life Insurance'
       },
       financial: {
         claimAmount: parseFloat(fnol.total_claim_amount) || 0,
@@ -958,8 +959,46 @@ class ServiceNowService {
       documents: [],
       workNotes: [],
       parties: [],
-      routing: { type: 'STANDARD' },
-      workflow: {}
+      // Determine routing type based on claim amount and other factors
+      routing: (() => {
+        const claimAmount = parseFloat(fnol.total_claim_amount) || 0;
+        const routingType = claimAmount <= 100000 ? 'FASTTRACK' : 'STANDARD';
+        return {
+          type: routingType,
+          assignedTo: fnol.assigned_to?.display_value || fnol.assigned_to || '',
+          assignedDate: fnol.sys_created_on || ''
+        };
+      })(),
+      // Map SLA workflow data - calculate if not provided
+      workflow: (() => {
+        const claimAmount = parseFloat(fnol.total_claim_amount) || 0;
+        const routingType = claimAmount <= 100000 ? 'FASTTRACK' : 'STANDARD';
+        const slaDays = routingType === 'FASTTRACK' ? 10 : 30;
+
+        // Use ServiceNow SLA data if available, otherwise calculate
+        let slaData = null;
+        if (fnol.sla_due_date || fnol.sys_created_on) {
+          const dueDate = fnol.sla_due_date?.display_value || fnol.sla_due_date || (() => {
+            // Calculate SLA due date based on created date + SLA days
+            const createdDate = new Date(fnol.opened_at || fnol.sys_created_on);
+            const calculatedDueDate = new Date(createdDate);
+            calculatedDueDate.setDate(calculatedDueDate.getDate() + slaDays);
+            return calculatedDueDate.toISOString();
+          })();
+
+          slaData = {
+            dueDate: dueDate,
+            status: fnol.sla_status?.display_value || fnol.sla_status || 'on-track',
+            daysRemaining: fnol.sla_days_remaining || null
+          };
+        }
+
+        return {
+          sla: slaData,
+          currentStage: fnol.state || '1',
+          completedStages: []
+        };
+      })()
     };
   }
 
@@ -1178,6 +1217,149 @@ class ServiceNowService {
     } catch (error) {
       console.error('[ServiceNow] Error fetching beneficiary analyzer data:', error);
       throw new Error(`Failed to fetch beneficiary analyzer data from ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Upload document attachment to ServiceNow record
+   * @param {File} file - File object to upload
+   * @param {string} tableName - ServiceNow table name (e.g., 'x_dxcis_claims_a_0_claims_fnol')
+   * @param {string} tableSysId - sys_id of the record to attach to
+   * @returns {Promise<Object>} Upload result with attachment sys_id
+   */
+  async uploadDocument(file, tableName, tableSysId) {
+    try {
+      console.log('[ServiceNow] Uploading document:', file.name);
+      console.log('[ServiceNow] Table:', tableName, 'Record sys_id:', tableSysId);
+
+      // Prepare query parameters
+      const params = new URLSearchParams({
+        table_name: tableName,
+        table_sys_id: tableSysId,
+        file_name: file.name
+      });
+
+      // Build URL with attachment API endpoint
+      const path = `/api/now/attachment/file?${params}`;
+      const url = this.buildProxyURL(path);
+
+      console.log('[ServiceNow] Upload URL params:', {
+        table_name: tableName,
+        table_sys_id: tableSysId,
+        file_name: file.name
+      });
+      console.log('[ServiceNow] Full upload URL:', url);
+
+      const headers = await this.getAuthHeaders();
+
+      // Create FormData for multipart/form-data upload
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('[ServiceNow] File size:', file.size, 'bytes');
+      console.log('[ServiceNow] Using multipart/form-data upload');
+
+      // Remove Content-Type header to let browser set it with boundary
+      const uploadHeaders = { ...headers };
+      delete uploadHeaders['Content-Type'];
+
+      // Upload file as form-data
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...uploadHeaders,
+          'Accept': 'application/json'
+        },
+        body: formData
+      });
+
+      console.log('[ServiceNow] Upload response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ServiceNow] Upload error:', errorText);
+        throw new Error(`Document upload failed: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('[ServiceNow] Document uploaded successfully:', result);
+
+      return {
+        success: true,
+        attachmentSysId: result.result.sys_id,
+        fileName: result.result.file_name,
+        fileSize: result.result.size_bytes,
+        contentType: result.result.content_type,
+        data: result.result
+      };
+    } catch (error) {
+      console.error('[ServiceNow] Error uploading document:', error);
+      throw new Error(`Failed to upload document to ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get attachments for a ServiceNow record
+   * @param {string} tableName - ServiceNow table name
+   * @param {string} tableSysId - sys_id of the record
+   * @returns {Promise<Array>} Array of attachment records
+   */
+  async getAttachments(tableName, tableSysId) {
+    try {
+      const params = new URLSearchParams({
+        sysparm_query: `table_name=${tableName}^table_sys_id=${tableSysId}`,
+        sysparm_display_value: 'true'
+      });
+
+      const path = `/api/now/attachment?${params}`;
+      const url = this.buildProxyURL(path);
+      console.log('[ServiceNow] Fetching attachments for:', tableName, tableSysId);
+
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, {
+        method: 'GET',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`ServiceNow API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[ServiceNow] Attachments fetched:', data.result?.length || 0, 'files');
+      return data.result || [];
+    } catch (error) {
+      console.error('[ServiceNow] Error fetching attachments:', error);
+      throw new Error(`Failed to fetch attachments from ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Delete an attachment from ServiceNow
+   * @param {string} attachmentSysId - sys_id of the attachment to delete
+   * @returns {Promise<boolean>} Success status
+   */
+  async deleteAttachment(attachmentSysId) {
+    try {
+      const path = `/api/now/attachment/${attachmentSysId}`;
+      const url = this.buildProxyURL(path);
+      console.log('[ServiceNow] Deleting attachment:', attachmentSysId);
+
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`ServiceNow API error: ${response.status}`);
+      }
+
+      console.log('[ServiceNow] Attachment deleted successfully');
+      return true;
+    } catch (error) {
+      console.error('[ServiceNow] Error deleting attachment:', error);
+      throw new Error(`Failed to delete attachment from ServiceNow: ${error.message}`);
     }
   }
 

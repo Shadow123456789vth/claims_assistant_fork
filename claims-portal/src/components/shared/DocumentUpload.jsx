@@ -11,7 +11,7 @@
  * - Preview before submission
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   DxcFlex,
   DxcContainer,
@@ -21,22 +21,60 @@ import {
   DxcAlert,
   DxcInset
 } from '@dxc-technology/halstack-react';
+import serviceNowService from '../../services/api/serviceNowService';
 import './DocumentUpload.css';
 
 const DocumentUpload = ({
   claimId,
+  tableName = 'x_dxcis_claims_a_0_claims_fnol',
+  tableSysId,
   requirementId,
   onUploadComplete,
   acceptedFileTypes = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'],
   maxFileSize = 10 * 1024 * 1024, // 10MB in bytes
   multiple = true
 }) => {
+  // Use claimId as fallback if tableSysId is not provided
+  const actualTableSysId = tableSysId || claimId;
+
   const [files, setFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState(null);
+  const [existingAttachments, setExistingAttachments] = useState([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Debug: Log props on mount and changes
+  useEffect(() => {
+    console.log('[DocumentUpload] Component mounted/updated');
+    console.log('[DocumentUpload] Props:', { claimId, tableName, tableSysId, requirementId });
+  }, [claimId, tableName, tableSysId, requirementId]);
+
+  // Load existing attachments on mount
+  useEffect(() => {
+    console.log('[DocumentUpload] Checking if should load attachments:', { actualTableSysId, tableName });
+    if (actualTableSysId && tableName) {
+      console.log('[DocumentUpload] Loading attachments...');
+      loadExistingAttachments();
+    } else {
+      console.warn('[DocumentUpload] Cannot load attachments - missing actualTableSysId or tableName');
+    }
+  }, [actualTableSysId, tableName]);
+
+  // Load existing attachments from ServiceNow
+  const loadExistingAttachments = async () => {
+    try {
+      setLoadingAttachments(true);
+      const attachments = await serviceNowService.getAttachments(tableName, actualTableSysId);
+      setExistingAttachments(attachments);
+    } catch (err) {
+      console.error('Error loading attachments:', err);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
 
   // Format file size for display
   const formatFileSize = (bytes) => {
@@ -145,37 +183,85 @@ const DocumentUpload = ({
     });
   };
 
-  // Simulate upload (replace with actual API call)
+  // Upload files to ServiceNow
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    console.log('[DocumentUpload] handleUpload called');
+    console.log('[DocumentUpload] actualTableSysId:', actualTableSysId);
+    console.log('[DocumentUpload] tableName:', tableName);
+    console.log('[DocumentUpload] files:', files);
+
+    if (files.length === 0) {
+      console.error('[DocumentUpload] No files selected');
+      return;
+    }
+    if (!actualTableSysId || !tableName) {
+      const errorMsg = `Missing required parameters: actualTableSysId=${actualTableSysId}, tableName=${tableName}`;
+      console.error('[DocumentUpload]', errorMsg);
+      setError(errorMsg);
+      alert(errorMsg); // Show alert for immediate feedback
+      return;
+    }
 
     setUploading(true);
     setUploadProgress(0);
     setError(null);
 
     try {
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200));
-        setUploadProgress(i);
+      const uploadResults = [];
+      const totalFiles = files.length;
+
+      // Upload each file sequentially
+      for (let i = 0; i < files.length; i++) {
+        const fileData = files[i];
+        console.log(`Uploading file ${i + 1} of ${totalFiles}:`, fileData.name);
+
+        try {
+          // Upload to ServiceNow
+          const result = await serviceNowService.uploadDocument(
+            fileData.file,
+            tableName,
+            actualTableSysId
+          );
+
+          uploadResults.push({
+            success: true,
+            fileName: fileData.name,
+            attachmentSysId: result.attachmentSysId
+          });
+
+          // Update progress
+          setUploadProgress(Math.round(((i + 1) / totalFiles) * 100));
+
+        } catch (uploadError) {
+          console.error(`Error uploading ${fileData.name}:`, uploadError);
+          uploadResults.push({
+            success: false,
+            fileName: fileData.name,
+            error: uploadError.message
+          });
+        }
       }
 
-      // TODO: Replace with actual API call
-      console.log('Uploading files for claim:', claimId, 'requirement:', requirementId);
-      console.log('Files:', files.map(f => f.name));
+      // Check for any failed uploads
+      const failedUploads = uploadResults.filter(r => !r.success);
+      if (failedUploads.length > 0) {
+        setError(`Failed to upload ${failedUploads.length} file(s): ${failedUploads.map(f => f.fileName).join(', ')}`);
+      }
 
       // Call success callback
       if (onUploadComplete) {
         onUploadComplete({
           claimId,
           requirementId,
-          files: files.map(f => ({
-            name: f.name,
-            size: f.size,
-            type: f.type
-          }))
+          tableSysId: actualTableSysId,
+          results: uploadResults,
+          totalFiles: totalFiles,
+          successCount: uploadResults.filter(r => r.success).length
         });
       }
+
+      // Reload existing attachments to show newly uploaded files
+      await loadExistingAttachments();
 
       // Clear files after successful upload
       files.forEach(f => {
@@ -183,10 +269,35 @@ const DocumentUpload = ({
       });
       setFiles([]);
       setUploadProgress(0);
+
+      // Show success message if all uploaded successfully
+      if (failedUploads.length === 0) {
+        console.log(`Successfully uploaded ${totalFiles} file(s) to ServiceNow`);
+      }
+
     } catch (err) {
+      console.error('Upload error:', err);
       setError(`Upload failed: ${err.message}`);
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Delete attachment from ServiceNow
+  const handleDeleteAttachment = async (attachmentSysId, fileName) => {
+    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+      return;
+    }
+
+    try {
+      await serviceNowService.deleteAttachment(attachmentSysId);
+      console.log('Attachment deleted:', fileName);
+
+      // Reload attachments
+      await loadExistingAttachments();
+    } catch (err) {
+      console.error('Error deleting attachment:', err);
+      setError(`Failed to delete ${fileName}: ${err.message}`);
     }
   };
 
@@ -201,6 +312,14 @@ const DocumentUpload = ({
       style={{ backgroundColor: 'var(--color-bg-neutral-lightest)' }}
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+        {/* Debug Info - Remove in production */}
+        {(!actualTableSysId || !tableName) && (
+          <DxcAlert
+            type="warning"
+            inlineText={`Configuration Issue: ${!actualTableSysId ? 'tableSysId is missing' : ''} ${!tableName ? 'tableName is missing' : ''}`}
+          />
+        )}
+
         {/* Upload Zone */}
         <div
           className={`document-upload-zone ${dragActive ? 'drag-active' : ''}`}
@@ -346,6 +465,64 @@ const DocumentUpload = ({
               mode="primary"
               onClick={handleUpload}
             />
+          </DxcFlex>
+        )}
+
+        {/* Existing Attachments from ServiceNow */}
+        {existingAttachments.length > 0 && (
+          <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+              Uploaded Documents ({existingAttachments.length})
+            </DxcTypography>
+            {existingAttachments.map((attachment, index) => (
+              <DxcContainer
+                key={index}
+                style={{
+                  backgroundColor: 'var(--color-bg-neutral-lightest)',
+                  border: '1px solid var(--border-color-neutral-lighter)'
+                }}
+              >
+                <DxcInset space="var(--spacing-padding-s)">
+                  <DxcFlex justifyContent="space-between" alignItems="center">
+                    <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '48px', color: 'var(--color-fg-success-medium)' }}
+                      >
+                        check_circle
+                      </span>
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                        <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+                          {attachment.file_name?.display_value || attachment.file_name || 'Unknown'}
+                        </DxcTypography>
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                          {attachment.size_bytes ? formatFileSize(parseInt(attachment.size_bytes)) : 'Size unknown'}
+                          {' • '}
+                          {attachment.sys_created_on ? new Date(attachment.sys_created_on).toLocaleDateString() : 'Date unknown'}
+                        </DxcTypography>
+                      </DxcFlex>
+                    </DxcFlex>
+                    <DxcButton
+                      label="Delete"
+                      mode="tertiary"
+                      size="small"
+                      onClick={() => handleDeleteAttachment(
+                        attachment.sys_id,
+                        attachment.file_name?.display_value || attachment.file_name || 'file'
+                      )}
+                    />
+                  </DxcFlex>
+                </DxcInset>
+              </DxcContainer>
+            ))}
+          </DxcFlex>
+        )}
+
+        {loadingAttachments && (
+          <DxcFlex justifyContent="center">
+            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+              Loading existing documents...
+            </DxcTypography>
           </DxcFlex>
         )}
       </DxcFlex>

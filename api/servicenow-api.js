@@ -1,5 +1,8 @@
 export const config = {
-  runtime: 'nodejs'
+  runtime: 'nodejs',
+  api: {
+    bodyParser: false // Disable body parser to handle raw binary data
+  }
 };
 
 export default async function handler(req, res) {
@@ -51,11 +54,30 @@ export default async function handler(req, res) {
 
     // Add body for POST, PUT, PATCH
     if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-      if (req.body) {
+      const contentType = req.headers['content-type'] || '';
+
+      // Handle file uploads and binary data (multipart/form-data, binary, etc.)
+      if (contentType.includes('multipart/form-data') ||
+          contentType.includes('application/pdf') ||
+          contentType.includes('application/octet-stream') ||
+          contentType.includes('image/')) {
+
+        // Read raw body as buffer for binary/form data
+        const chunks = [];
+        for await (const chunk of req) {
+          chunks.push(chunk);
+        }
+        const bodyBuffer = Buffer.concat(chunks);
+
+        fetchOptions.body = bodyBuffer;
+        console.log('[API] Upload body size:', bodyBuffer.length, 'bytes');
+        console.log('[API] Content-Type:', contentType);
+      } else if (req.body) {
+        // Handle JSON body
         fetchOptions.body = typeof req.body === 'string'
           ? req.body
           : JSON.stringify(req.body);
-        console.log('[API] Request body:', fetchOptions.body);
+        console.log('[API] JSON body');
       }
     }
 

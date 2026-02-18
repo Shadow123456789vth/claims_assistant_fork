@@ -16,6 +16,7 @@ import {
 import FastTrackBadge from '../shared/FastTrackBadge';
 import DocumentUpload from '../shared/DocumentUpload';
 import DocumentViewer from '../shared/DocumentViewer';
+import AnomalyDetection from '../shared/AnomalyDetection';
 import BeneficiaryAnalyzer from '../BeneficiaryAnalyzer/BeneficiaryAnalyzer';
 import DeathEventPanel from '../DeathEventPanel/DeathEventPanel';
 import PolicySummaryPanel from '../PolicySummaryPanel/PolicySummaryPanel';
@@ -44,8 +45,83 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [showPartyForm, setShowPartyForm] = useState(false);
   const [selectedParty, setSelectedParty] = useState(null);
+  const [showAnomalyDetection, setShowAnomalyDetection] = useState(false);
+  const [anomalyData, setAnomalyData] = useState(null);
 
   console.log('[ClaimsWorkbench] Received claim:', claim);
+
+  // Handler for anomaly detection
+  const handleSchedulePayment = async () => {
+    console.log('[ClaimsWorkbench] Schedule Payment clicked - Running anomaly detection');
+
+    // TODO: Replace with actual API call to anomaly detection service
+    // For now, using mock data based on the structure provided
+    const mockAnomalyData = {
+      "AgenticSummary": {
+        "General_Information": {
+          "Policy_Number": claim.policy?.policyNumber || "892461037",
+          "Claim_Number": claim.claimNumber || "WRADC0004602"
+        },
+        "Overall_Status": "FAIL",
+        "Processing_Recommendation": "STOP_AND_REVIEW - Multiple critical findings require manual review before payment processing.",
+        "Analysis_Findings": [
+          {
+            "Finding_ID": "R001",
+            "Severity": "MEDIUM",
+            "Risk_Type": "Operational",
+            "Title": "Mandatory Fields Missing",
+            "Status": "FAIL",
+            "Evidence": [
+              "Missing beneficiary tax ID",
+              "Missing payment method details"
+            ],
+            "Recommendation": "Complete all mandatory fields before proceeding with payment."
+          },
+          {
+            "Finding_ID": "R002",
+            "Severity": "HIGH",
+            "Risk_Type": "Compliance",
+            "Title": "Tax Withholding Not Calculated",
+            "Status": "FAIL",
+            "Evidence": [
+              "No tax withholding calculation found",
+              "Payment amount exceeds threshold requiring tax withholding"
+            ],
+            "Recommendation": "Calculate and apply appropriate tax withholding before payment."
+          }
+        ],
+        "Actions_Required": [
+          {
+            "Action": "Complete Missing Beneficiary Information",
+            "Priority": "HIGH",
+            "Reason": "Tax ID and contact information required for IRS reporting"
+          },
+          {
+            "Action": "Calculate Tax Withholding",
+            "Priority": "CRITICAL",
+            "Reason": "Federal and state tax withholding must be calculated and applied"
+          }
+        ],
+        "Risk_Assessment": [
+          {
+            "Category": "Compliance Risk",
+            "Level": "HIGH"
+          },
+          {
+            "Category": "Operational Risk",
+            "Level": "MEDIUM"
+          }
+        ],
+        "Summary_Recommendation": {
+          "Decision": "STOP_AND_REVIEW",
+          "Rationale": "Payment cannot be processed until all mandatory fields are completed and tax withholding is calculated. Manual review required."
+        }
+      }
+    };
+
+    setAnomalyData(mockAnomalyData);
+    setShowAnomalyDetection(true);
+  };
 
   if (!claim) {
     console.log('[ClaimsWorkbench] No claim provided, showing alert');
@@ -538,7 +614,12 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="Pending Payments" />
-                      <DxcButton label="Schedule Payment" mode="primary" icon="add" />
+                      <DxcButton
+                        label="Schedule Payment"
+                        mode="primary"
+                        icon="add"
+                        onClick={handleSchedulePayment}
+                      />
                     </DxcFlex>
                     {financialData.pendingPayments.map((payment, index) => (
                       <DxcContainer
@@ -973,6 +1054,20 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
             }}
             onClose={() => setShowBeneficiaryAnalyzer(false)}
           />
+        </DxcDialog>
+      )}
+
+      {/* Anomaly Detection Modal */}
+      {showAnomalyDetection && anomalyData && (
+        <DxcDialog isCloseVisible onCloseClick={() => setShowAnomalyDetection(false)}>
+          <div style={{ maxHeight: '85vh', overflowY: 'auto', overflowX: 'hidden' }}>
+            <DxcInset space="var(--spacing-padding-l)">
+              <AnomalyDetection
+                anomalyData={anomalyData}
+                onClose={() => setShowAnomalyDetection(false)}
+              />
+            </DxcInset>
+          </div>
         </DxcDialog>
       )}
     </DxcContainer>
