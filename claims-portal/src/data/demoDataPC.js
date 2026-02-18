@@ -177,7 +177,7 @@ const generatePCTimeline = (claim) => {
   events.push({ id: `${claim.id}-evt-2`, timestamp: new Date(base + 3 * 60000).toISOString(), type: 'coverage.verified', source: 'policy', user: { name: 'System', role: 'system' }, description: 'Coverage verified in Policy Admin system', metadata: { policyNumber: claim.policy.policyNumber, status: 'active' } });
 
   if (isFT) {
-    events.push({ id: `${claim.id}-evt-3`, timestamp: new Date(base + 8 * 60000).toISOString(), type: 'routing.fasttrack', source: 'routing', user: { name: 'Routing Engine', role: 'system' }, description: 'Claim qualified for Fast Track processing', metadata: { score: claim.routing.score, eligible: true } });
+    events.push({ id: `${claim.id}-evt-3`, timestamp: new Date(base + 8 * 60000).toISOString(), type: 'routing.fasttrack', source: 'routing', user: { name: 'Routing Engine', role: 'system' }, description: 'Claim qualified for STP (Straight Through Processing)', metadata: { score: claim.routing.score, eligible: true } });
     events.push({ id: `${claim.id}-evt-4`, timestamp: new Date(base + 12 * 60000).toISOString(), type: 'estimate.approved', source: 'appraisal', user: { name: 'Auto Appraisal Service', role: 'external' }, description: 'Repair estimate reviewed and approved', metadata: { amount: claim.financial?.repairEstimate } });
   } else {
     events.push({ id: `${claim.id}-evt-3`, timestamp: new Date(base + 15 * 60000).toISOString(), type: 'adjuster.assigned', source: 'routing', user: { name: 'Assignment Engine', role: 'system' }, description: 'Field adjuster assigned for inspection', metadata: { assignedTo: claim.workflow?.assignedTo } });

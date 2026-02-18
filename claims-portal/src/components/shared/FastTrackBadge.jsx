@@ -48,7 +48,7 @@ const FastTrackBadge = ({
       )}
       {showLabel && (
         <DxcBadge
-          label="FastTrack"
+          label="STP"
           size={size}
         />
       )}

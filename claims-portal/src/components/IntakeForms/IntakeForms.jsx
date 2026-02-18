@@ -1309,10 +1309,10 @@ const IntakeForms = () => {
 
                 <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
                   <DxcTypography fontWeight="font-weight-semibold">
-                    3. Fast Track Processing
+                    3. STP (Straight Through Processing)
                   </DxcTypography>
                   <DxcTypography color="var(--color-fg-neutral-strong)">
-                    Simple, straightforward claims may qualify for Fast Track processing with an accelerated settlement timeline
+                    Simple, straightforward claims may qualify for STP with an accelerated settlement timeline
                   </DxcTypography>
                 </DxcFlex>
 
