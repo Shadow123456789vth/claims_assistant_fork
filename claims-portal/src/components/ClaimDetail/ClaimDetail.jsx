@@ -2,7 +2,7 @@
  * Claim Detail - Unified 360° View
  *
  * Comprehensive claim view that integrates all Phase 1-3 components:
- * - Claim header with FastTrack badge and SLA indicator
+ * - Claim header with STP badge and SLA indicator
  * - Policy information
  * - Requirements tracker
  * - Document list
@@ -29,7 +29,7 @@ import { useClaims } from '../../contexts/ClaimsContext';
 import { usePolicy } from '../../contexts/PolicyContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
 import { useDocument } from '../../contexts/DocumentContext';
-import FastTrackBadge from '../shared/FastTrackBadge';
+import STPBadge from '../shared/STPBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import RequirementsTracker from '../shared/RequirementsTracker';
 import DocumentUpload from '../shared/DocumentUpload';
@@ -57,7 +57,7 @@ const ClaimHeader = ({ claim }) => {
     }
   };
 
-  const isFastTrack = claim.routing?.type === RoutingType.FASTTRACK;
+  const isSTP = claim.routing?.type === RoutingType.STP;
 
   return (
     <DxcContainer
@@ -69,8 +69,8 @@ const ClaimHeader = ({ claim }) => {
         <DxcFlex justifyContent="space-between" alignItems="center">
           <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
             <DxcHeading level={2} text={`Claim ${claim.claimNumber || claim.id}`} />
-            {isFastTrack && (
-              <FastTrackBadge
+            {isSTP && (
+              <STPBadge
                 eligible={true}
                 showLabel={true}
                 size="medium"
@@ -142,7 +142,7 @@ const ClaimHeader = ({ claim }) => {
           <SLAIndicator
             slaDate={claim.workflow.sla.dueDate}
             daysOpen={claim.workflow.daysOpen || 0}
-            slaDays={isFastTrack ? 10 : 30}
+            slaDays={isSTP ? 10 : 30}
             routing={claim.routing?.type}
           />
         )}

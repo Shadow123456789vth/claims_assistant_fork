@@ -1,8 +1,8 @@
 /**
  * Routing Engine
- * Evaluates FastTrack eligibility based on multiple criteria
+ * Evaluates STP eligibility based on multiple criteria
  *
- * FastTrack Criteria:
+ * STP Criteria:
  * - 3-point death verification match (SSN + Name + DOB) ≥95%
  * - Policy in-force and clean (no lapses, contestability passed)
  * - Beneficiary match confidence ≥95%
@@ -15,7 +15,7 @@ import { RoutingType } from '../../types/claim.types';
 import { handleBusinessError } from '../utils/errorHandler';
 
 /**
- * FastTrack Eligibility Result
+ * STP Eligibility Result
  */
 class EligibilityResult {
   constructor() {
@@ -31,7 +31,7 @@ class EligibilityResult {
       noAnomalies: { passed: false, score: 0, weight: 10 }
     };
     this.score = 0;
-    this.threshold = 85; // Minimum score to be FastTrack eligible
+    this.threshold = 85; // Minimum score to be STP eligible
   }
 
   calculateScore() {
@@ -45,13 +45,13 @@ class EligibilityResult {
 
   setReason() {
     if (this.eligible) {
-      this.reason = 'All FastTrack criteria met';
+      this.reason = 'All STP criteria met';
     } else {
       const failedCriteria = Object.entries(this.criteria)
         .filter(([_, criterion]) => !criterion.passed)
         .map(([name]) => name);
 
-      this.reason = `FastTrack ineligible: ${failedCriteria.join(', ')} failed`;
+      this.reason = `STP ineligible: ${failedCriteria.join(', ')} failed`;
     }
   }
 }
@@ -59,7 +59,7 @@ class EligibilityResult {
 /**
  * Routing Engine Configuration
  */
-const FASTTRACK_CONFIG = {
+const STP_CONFIG = {
   // Death Verification Thresholds
   deathVerificationThreshold: 95,
   threePointMatchRequired: true,
@@ -91,11 +91,11 @@ const FASTTRACK_CONFIG = {
  * @param {Object} data.aiInsights - AI insights (optional)
  * @returns {Promise<EligibilityResult>}
  */
-export async function evaluateFastTrackEligibility(data) {
+export async function evaluateSTPEligibility(data) {
   const result = new EligibilityResult();
 
   try {
-    console.log('[RoutingEngine] Evaluating FastTrack eligibility');
+    console.log('[RoutingEngine] Evaluating STP eligibility');
 
     // Criterion 1: Death Verification (30% weight)
     evaluateDeathVerification(data.deathVerification, result);
@@ -161,7 +161,7 @@ function evaluateDeathVerification(verification, result) {
   if (threePointMatch) {
     const matchConfidence = threePointMatch.confidence || confidence;
 
-    if (matchConfidence >= FASTTRACK_CONFIG.deathVerificationThreshold) {
+    if (matchConfidence >= STP_CONFIG.deathVerificationThreshold) {
       criterion.passed = true;
       criterion.score = criterion.weight;
     } else {
@@ -201,7 +201,7 @@ function evaluatePolicyStatus(policy, result) {
   const { status } = policy;
 
   // Check if policy is in-force
-  if (status === FASTTRACK_CONFIG.requiredPolicyStatus) {
+  if (status === STP_CONFIG.requiredPolicyStatus) {
     criterion.passed = true;
     criterion.score = criterion.weight;
   } else {
@@ -232,7 +232,7 @@ function evaluateBeneficiaryMatch(beneficiaryVerification, result) {
 
   const { confidence, matches } = beneficiaryVerification;
 
-  if (confidence >= FASTTRACK_CONFIG.beneficiaryMatchThreshold) {
+  if (confidence >= STP_CONFIG.beneficiaryMatchThreshold) {
     criterion.passed = true;
     criterion.score = criterion.weight;
   } else if (confidence >= 70) {
@@ -269,7 +269,7 @@ function evaluateContestability(policy, result) {
   const yearsSinceIssue = (now - issueDate) / (1000 * 60 * 60 * 24 * 365);
 
   // Check if beyond contestability period
-  if (yearsSinceIssue >= FASTTRACK_CONFIG.contestabilityPeriodYears) {
+  if (yearsSinceIssue >= STP_CONFIG.contestabilityPeriodYears) {
     criterion.passed = true;
     criterion.score = criterion.weight;
   } else {
@@ -300,7 +300,7 @@ function evaluateClaimAmount(claim, result) {
   const claimAmount = claim.financial.claimAmount;
 
   // Check if claim amount is within threshold
-  if (claimAmount <= FASTTRACK_CONFIG.maxClaimAmount) {
+  if (claimAmount <= STP_CONFIG.maxClaimAmount) {
     criterion.passed = true;
     criterion.score = criterion.weight;
   } else {
@@ -310,7 +310,7 @@ function evaluateClaimAmount(claim, result) {
 
   console.log('[RoutingEngine] Claim amount:', {
     amount: claimAmount,
-    threshold: FASTTRACK_CONFIG.maxClaimAmount,
+    threshold: STP_CONFIG.maxClaimAmount,
     passed: criterion.passed,
     score: criterion.score
   });
@@ -357,7 +357,7 @@ function evaluateAnomalies(aiInsights, result) {
 
 /**
  * Re-evaluate Routing
- * Re-evaluates FastTrack eligibility when claim state changes
+ * Re-evaluates STP eligibility when claim state changes
  * (e.g., new requirements satisfied, documents received)
  */
 export async function reevaluateRouting(claimId, updatedData) {
@@ -367,7 +367,7 @@ export async function reevaluateRouting(claimId, updatedData) {
     // Get latest claim data
     // TODO: Fetch from context or service
 
-    const eligibility = await evaluateFastTrackEligibility(updatedData);
+    const eligibility = await evaluateSTPEligibility(updatedData);
 
     return eligibility;
 
@@ -381,7 +381,7 @@ export async function reevaluateRouting(claimId, updatedData) {
  * Get Routing Configuration
  */
 export function getRoutingConfig() {
-  return { ...FASTTRACK_CONFIG };
+  return { ...STP_CONFIG };
 }
 
 /**
@@ -389,12 +389,12 @@ export function getRoutingConfig() {
  * (Admin function)
  */
 export function updateRoutingConfig(updates) {
-  Object.assign(FASTTRACK_CONFIG, updates);
-  console.log('[RoutingEngine] Configuration updated:', FASTTRACK_CONFIG);
+  Object.assign(STP_CONFIG, updates);
+  console.log('[RoutingEngine] Configuration updated:', STP_CONFIG);
 }
 
 export default {
-  evaluateFastTrackEligibility,
+  evaluateSTPEligibility,
   reevaluateRouting,
   getRoutingConfig,
   updateRoutingConfig

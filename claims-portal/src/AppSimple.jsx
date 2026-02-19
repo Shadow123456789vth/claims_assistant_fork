@@ -9,7 +9,7 @@ function AppSimple() {
     <DxcApplicationLayout>
       <DxcApplicationLayout.Header>
         <DxcFlex gap="1rem" alignItems="center">
-          <h2 style={{ margin: 0, color: '#5f249f' }}>
+          <h2 style={{ margin: 0, color: '#0F4470' }}>
             Bloom Claims Assistant
           </h2>
         </DxcFlex>

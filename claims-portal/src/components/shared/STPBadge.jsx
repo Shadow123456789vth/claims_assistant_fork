@@ -1,24 +1,25 @@
 /**
- * FastTrack Badge Component
- * Displays FastTrack eligibility status with visual indicator
+ * STP Badge Component
+ * Displays STP (Straight Through Processing) eligibility status with visual indicator
  */
 
 import { DxcBadge, DxcFlex, DxcTypography } from '@dxc-technology/halstack-react';
 import { RoutingType } from '../../types/claim.types';
 
-const FastTrackBadge = ({
+const STPBadge = ({
   routing,
   eligible = null,
   showLabel = true,
   size = 'medium',
-  showIcon = true
+  showIcon = true,
+  label = 'STP'
 }) => {
-  // Determine if FastTrack
-  const isFastTrack = routing === RoutingType.FASTTRACK ||
-                      (eligible !== null && eligible === true);
+  // Determine if STP
+  const isSTP = routing === RoutingType.STP ||
+                (eligible !== null && eligible === true);
 
-  if (!isFastTrack && eligible === false) {
-    // Not FastTrack eligible - show standard badge
+  if (!isSTP && eligible === false) {
+    // Not STP eligible - show standard badge
     return showLabel ? (
       <DxcBadge
         label="Standard"
@@ -27,12 +28,12 @@ const FastTrackBadge = ({
     ) : null;
   }
 
-  if (!isFastTrack) {
+  if (!isSTP) {
     // No routing info - don't show badge
     return null;
   }
 
-  // FastTrack badge with icon
+  // STP badge with icon
   return (
     <DxcFlex gap="0.5rem" alignItems="center">
       {showIcon && (
@@ -48,7 +49,7 @@ const FastTrackBadge = ({
       )}
       {showLabel && (
         <DxcBadge
-          label="STP"
+          label={label}
           size={size}
         />
       )}
@@ -57,10 +58,10 @@ const FastTrackBadge = ({
 };
 
 /**
- * FastTrack Eligibility Indicator
+ * STP Eligibility Indicator
  * Shows eligibility with confidence score
  */
-export const FastTrackEligibilityIndicator = ({ eligibility }) => {
+export const STPEligibilityIndicator = ({ eligibility }) => {
   if (!eligibility) return null;
 
   const { eligible, confidence, reason } = eligibility;
@@ -68,7 +69,7 @@ export const FastTrackEligibilityIndicator = ({ eligibility }) => {
   return (
     <DxcFlex direction="column" gap="0.5rem">
       <DxcFlex gap="0.5rem" alignItems="center">
-        <FastTrackBadge eligible={eligible} />
+        <STPBadge eligible={eligible} />
         <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
           Confidence: {confidence}%
         </DxcTypography>
@@ -82,4 +83,4 @@ export const FastTrackEligibilityIndicator = ({ eligibility }) => {
   );
 };
 
-export default FastTrackBadge;
+export default STPBadge;

@@ -810,15 +810,45 @@ a:focus, .bloom-link:focus {
 }
 
 /* ============================================================================
-   REMOVE PURPLE - ENSURE NO PURPLE ANYWHERE
+   HALSTACK PRIMARY COLOR SCALE → BLOOM BLUE OVERRIDE
+   Halstack v16 uses --color-primary-50 through --color-primary-900 as its
+   brand color scale (purple by default). These tokens cascade into every
+   semantic token the library uses:
+     --color-bg-primary-strong    → var(--color-primary-700)  [button bg]
+     --color-bg-primary-stronger  → var(--color-primary-800)  [button hover]
+     --color-bg-primary-strongest → var(--color-primary-900)  [button active]
+     --color-bg-primary-lighter   → var(--color-primary-100)  [light bg]
+     --color-fg-primary-strong    → var(--color-primary-700)  [text/icon]
+     … and all other primary semantic tokens.
+   Overriding the base scale here replaces ALL purple in Halstack components
+   (buttons, sidenav active state, focus rings, checkboxes, etc.) with
+   the Bloom blue palette, with --color-primary-700 = --color-blue-darker
+   as the main interactive color per the design requirement.
    ============================================================================ */
 
-/* Override any potential purple colors */
+:root {
+  --color-primary-50:  #E8F4FC;
+  --color-primary-100: #D6E9F7;  /* --color-blue-pale     */
+  --color-primary-200: #B3D4EE;
+  --color-primary-300: #8BBFE5;
+  --color-primary-400: #5CA9DD;  /* --color-blue-lighter  */
+  --color-primary-500: #2A8FD4;  /* --color-blue-light    */
+  --color-primary-600: #1B75BB;  /* --color-blue          */
+  --color-primary-700: #0F4470;  /* --color-blue-darker   (main interactive) */
+  --color-primary-800: #0A3358;
+  --color-primary-900: #061E33;
+}
+
+/* Inline-style purple fallback — covers any hardcoded purple hex values */
 *[style*="purple"],
 *[style*="#667eea"],
 *[style*="#764ba2"],
+*[style*="#5f249f"],
+*[style*="#660099"],
+*[style*="#6f4b97"],
+*[style*="#9363c8"],
 *[class*="purple"] {
-  color: var(--color-primary) !important;
-  background-color: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
+  color: var(--color-blue-darker, #0F4470) !important;
+  background-color: var(--color-blue-darker, #0F4470) !important;
+  border-color: var(--color-blue-darker, #0F4470) !important;
 }

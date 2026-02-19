@@ -7,6 +7,21 @@ import App from './App.jsx'
 // Apply Bloom theme class to body
 document.body.classList.add('bloom-theme');
 
+// Override Halstack's --color-primary-* scale (purple by default) with Bloom blue.
+// Set on document.documentElement so these act as inline-style-level overrides that
+// take priority over any Emotion-injected stylesheet, regardless of injection order.
+const root = document.documentElement;
+root.style.setProperty('--color-primary-50',  '#E8F4FC');
+root.style.setProperty('--color-primary-100', '#D6E9F7');
+root.style.setProperty('--color-primary-200', '#B3D4EE');
+root.style.setProperty('--color-primary-300', '#8BBFE5');
+root.style.setProperty('--color-primary-400', '#5CA9DD');
+root.style.setProperty('--color-primary-500', '#2A8FD4');
+root.style.setProperty('--color-primary-600', '#1B75BB');
+root.style.setProperty('--color-primary-700', '#0F4470');
+root.style.setProperty('--color-primary-800', '#0A3358');
+root.style.setProperty('--color-primary-900', '#061E33');
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

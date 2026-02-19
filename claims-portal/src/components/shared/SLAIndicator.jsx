@@ -163,7 +163,7 @@ const SLAIndicator = ({
                 Completed in {daysOpen} days
               </DxcTypography>
               <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                {routing === 'fasttrack' ? 'FastTrack SLA: ≤10 days' : 'Standard SLA'}
+                {routing === 'fasttrack' ? 'STP SLA: ≤10 days' : 'Standard SLA'}
               </DxcTypography>
             </DxcFlex>
           </DxcFlex>
@@ -223,7 +223,7 @@ const SLAIndicator = ({
               Day {daysOpen} of {slaDays}
             </DxcTypography>
             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-              {routing === 'fasttrack' ? 'FastTrack SLA: ≤10 days' : 'Standard SLA'}
+              {routing === 'fasttrack' ? 'STP SLA: ≤10 days' : 'Standard SLA'}
             </DxcTypography>
           </DxcFlex>
         </DxcFlex>

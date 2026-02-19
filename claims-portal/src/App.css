@@ -3,13 +3,8 @@
    Using Official Bloom Design System
    ============================================================================ */
 
-/* IMPORTANT: Hide DXC Footer completely */
-footer,
-footer[class*="css-"],
-[class*="footer"],
-[class*="Footer"],
-.css-v9qxmx,
-.e1levpo511 {
+/* Remove DXC Footer - target the HTML footer element Halstack renders */
+html body footer {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
@@ -17,6 +12,7 @@ footer[class*="css-"],
   overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Main App Container */
@@ -381,13 +377,20 @@ footer[class*="css-"],
   }
 }
 
-/* Remove ANY purple colors - enforce blue theme */
+/* Remove ANY purple colors - enforce Bloom darker blue
+   Covers both old DXC purple (#5f249f) and Halstack v16 primary scale values */
 *[class*="purple"],
 *[style*="purple"],
 *[style*="#667eea"],
 *[style*="#764ba2"],
+*[style*="#5f249f"],
+*[style*="#660099"],
+*[style*="#8B2FC9"],
+*[style*="#6f4b97"],
+*[style*="#9363c8"],
+*[style*="#b487e4"],
 .purple {
-  color: var(--color-primary, #1B75BB) !important;
-  background-color: var(--color-primary, #1B75BB) !important;
-  border-color: var(--color-primary, #1B75BB) !important;
+  color: var(--color-blue-darker, #0F4470) !important;
+  background-color: var(--color-blue-darker, #0F4470) !important;
+  border-color: var(--color-blue-darker, #0F4470) !important;
 }

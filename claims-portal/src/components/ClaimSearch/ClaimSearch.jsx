@@ -10,7 +10,7 @@ import {
   DxcBadge,
   DxcInset
 } from '@dxc-technology/halstack-react';
-import FastTrackBadge from '../shared/FastTrackBadge';
+import STPBadge from '../shared/STPBadge';
 import './ClaimSearch.css';
 
 /**
@@ -60,7 +60,7 @@ const ClaimSearch = ({ onSelectClaim, onClose }) => {
   // Routing options
   const routingOptions = [
     { label: 'All Routing Types', value: '' },
-    { label: 'FastTrack', value: 'FASTTRACK' },
+    { label: 'STP', value: 'STP' },
     { label: 'Standard', value: 'STANDARD' }
   ];
 
@@ -97,7 +97,7 @@ const ClaimSearch = ({ onSelectClaim, onClose }) => {
           claimantName: 'Jane Smith',
           status: 'UNDER_REVIEW',
           type: 'DEATH',
-          routing: 'FASTTRACK',
+          routing: 'STP',
           claimAmount: 250000,
           createdAt: '2026-01-20',
           examiner: 'Sarah Johnson',
@@ -374,7 +374,7 @@ const ClaimSearch = ({ onSelectClaim, onClose }) => {
                               {claim.claimNumber}
                             </DxcTypography>
                             <DxcBadge label={claim.status} />
-                            <FastTrackBadge routing={claim.routing} size="small" />
+                            <STPBadge routing={claim.routing} size="small" />
                           </DxcFlex>
                           <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
                             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">

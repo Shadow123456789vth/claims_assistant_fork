@@ -27,7 +27,7 @@ export const generateDemoClaims = () => {
         claimAmount: 250000
       },
       routing: {
-        type: RoutingType.FASTTRACK
+        type: RoutingType.STP
       },
       workflow: {
         sla: {

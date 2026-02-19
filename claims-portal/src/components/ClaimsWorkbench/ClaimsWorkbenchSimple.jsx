@@ -117,7 +117,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
         return '#FF6B00';
       case 'In Review':
         return '#0095FF';
-      case 'FastTrack Eligible':
+      case 'STP Eligible':
         return '#24A148';
       case 'Approved':
         return '#24A148';
@@ -224,7 +224,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
           </DxcCard>
           <DxcCard style={{ flex: '1 1 22%', minWidth: '180px' }}>
             <DxcFlex direction="column" gap="0.5rem">
-              <span style={{ fontSize: '12px', color: '#666', fontWeight: 600 }}>FASTTRACK ELIGIBLE</span>
+              <span style={{ fontSize: '12px', color: '#666', fontWeight: 600 }}>STP ELIGIBLE</span>
               <span style={{ fontSize: '28px', fontWeight: 700, color: '#24A148' }}>
                 Yes
               </span>
